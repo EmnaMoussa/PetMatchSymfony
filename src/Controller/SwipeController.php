@@ -19,10 +19,11 @@ class SwipeController extends AbstractController
     {
         $user = $sessionUser->requireLogin();
         if (!$user) {
-        return $this->render('pages/access_denied.html.twig', [
-            'user' => null,
-        ]);
+            return $this->render('pages/access_denied.html.twig', [
+                'user' => null,
+            ]);
         }
+
         $userPets = $em->getRepository(Pet::class)->findBy(['owner' => $user], ['id' => 'ASC']);
         if (!$userPets) {
             $this->addFlash('error', 'Ajoutez au moins un animal avant de swiper.');
@@ -40,32 +41,46 @@ class SwipeController extends AbstractController
 
         if ($request->isMethod('POST')) {
             $pet = $em->getRepository(Pet::class)->find((int)$request->request->get('pet_id'));
+
             if ($pet && $pet->getOwner()?->getId() !== $user->getId() && $request->request->get('decision') === 'like') {
                 if (!$em->getRepository(PetLike::class)->findOneBy(['ownerPet' => $activePet, 'pet' => $pet])) {
                     $em->persist((new PetLike())->setUser($user)->setOwnerPet($activePet)->setPet($pet));
                 }
+
                 $reverseLike = $em->getRepository(PetLike::class)->findOneBy([
-    'ownerPet' => $pet,
-    'pet' => $activePet,
-]);
+                    'ownerPet' => $pet,
+                    'pet' => $activePet,
+                ]);
 
-if ($reverseLike) {
-    if (!$em->getRepository(PetMatch::class)->findOneBy(['ownerPet' => $activePet, 'pet' => $pet])) {
-        $em->persist((new PetMatch())->setUser($user)->setOwnerPet($activePet)->setPet($pet));
-    }
+                if ($reverseLike) {
+                    if (!$em->getRepository(PetMatch::class)->findOneBy(['ownerPet' => $activePet, 'pet' => $pet])) {
+                        $em->persist((new PetMatch())->setUser($user)->setOwnerPet($activePet)->setPet($pet));
+                    }
 
-    if (!$em->getRepository(PetMatch::class)->findOneBy(['ownerPet' => $pet, 'pet' => $activePet])) {
-        $em->persist((new PetMatch())->setUser($pet->getOwner())->setOwnerPet($pet)->setPet($activePet));
-    }
+                    if (!$em->getRepository(PetMatch::class)->findOneBy(['ownerPet' => $pet, 'pet' => $activePet])) {
+                        $em->persist((new PetMatch())->setUser($pet->getOwner())->setOwnerPet($pet)->setPet($activePet));
+                    }
 
-    $this->addFlash('success', $activePet->getNom() . ' a un nouveau match avec ' . $pet->getNom() . ' !');
-} else {
-    $this->addFlash('success', 'Like enregistre. Le match apparaitra si l autre proprietaire vous like aussi.');
-}
+                    $this->addFlash('success', $activePet->getNom() . ' a un nouveau match avec ' . $pet->getNom() . ' !');
+                } else {
+                    $this->addFlash('success', 'Like enregistre. Le match apparaitra si l autre proprietaire vous like aussi.');
+                }
 
-$em->flush();
-                
+                $em->flush();
+            }
+
             return $this->redirectToRoute('app_swipe', ['animal' => $activePet->getId()]);
+        }
+
+        $likes = $em->getRepository(PetLike::class)->findBy([
+            'ownerPet' => $activePet,
+        ]);
+
+        $likedPetIds = [];
+        foreach ($likes as $like) {
+            if ($like->getPet()) {
+                $likedPetIds[] = $like->getPet()->getId();
+            }
         }
 
         $qb = $em->createQueryBuilder()
@@ -74,6 +89,11 @@ $em->flush();
             ->where('p.owner != :user')
             ->setParameter('user', $user)
             ->setMaxResults(12);
+
+        if ($likedPetIds) {
+            $qb->andWhere('p.id NOT IN (:likedPetIds)')
+                ->setParameter('likedPetIds', $likedPetIds);
+        }
 
         foreach (['espece', 'ville'] as $filter) {
             if ($request->query->get($filter)) {
