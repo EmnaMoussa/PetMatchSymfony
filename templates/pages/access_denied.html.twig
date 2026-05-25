@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Acces reserve - PetMatch{% endblock %}
+
+{% block body %}
+<section class="card">
+    <h1>Acces reserve</h1>
+    <p>Vous devez etre connecte pour acceder a cette page.</p>
+
+    <div class="inline-actions">
+        <a class="button" href="{{ path('app_login') }}">Connexion</a>
+        <a class="button ghost" href="{{ path('app_signup') }}">Creer un compte</a>
+    </div>
+</section>
+{% endblock %}
