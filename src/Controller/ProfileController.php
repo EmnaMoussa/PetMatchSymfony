@@ -17,8 +17,11 @@ class ProfileController extends AbstractController
     public function profile(Request $request, EntityManagerInterface $em, SessionUser $sessionUser, SluggerInterface $slugger): Response
     {
         $user = $sessionUser->requireLogin();
-        if (!$user) return $this->redirectToRoute('app_login');
-
+        if (!$user) {
+            return $this->render('pages/access_denied.html.twig', [
+            'user' => null,
+            ]);
+        }
         $petRepository = $em->getRepository(Pet::class);
         $pet = null;
 
