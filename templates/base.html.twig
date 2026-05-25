@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}PetMatch Symfony{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" href="{{ path('app_home') }}">PetMatch 🐾</a>
+    <nav>
+        <a href="{{ path('app_home') }}">Accueil</a>
+        <a href="{{ path('app_swipe') }}">Swipe</a>
+        <a href="{{ path('app_matches') }}">Matches</a>
+        {% if user is defined and user %}
+            <a href="{{ path('app_profile') }}">Profil</a>
+            <a href="{{ path('app_logout') }}">Déconnexion</a>
+        {% else %}
+            <a href="{{ path('app_login') }}">Connexion</a>
+            <a class="button small" href="{{ path('app_signup') }}">Inscription</a>
+        {% endif %}
+    </nav>
+</header>
+
+<main>
+    {% for message in app.flashes('success') %}
+        <div class="flash success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="flash error">{{ message }}</div>
+    {% endfor %}
+    {% block body %}{% endblock %}
+</main>
+
+<footer>
+    <p>Adoptez, aimez, protégez — PetMatch Symfony</p>
+</footer>
+</body>
+</html>

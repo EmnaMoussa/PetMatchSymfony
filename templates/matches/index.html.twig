@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Matches - PetMatch{% endblock %}
+
+{% block body %}
+<section>
+    <h1>Mes matches</h1>
+    <div class="grid">
+        {% for match in matches %}
+            {% set pet = match.pet %}
+            <article class="card">
+                <div class="pet-photo">{{ pet.espece|capitalize }}</div>
+                <h2>{{ pet.nom }}</h2>
+                <p>{{ pet.race ?: pet.espece }} - {{ pet.age ?: '?' }} ans - {{ pet.ville ?: 'Tunisie' }}</p>
+                <p class="muted">Pour {{ match.ownerPet ? match.ownerPet.nom : 'un de mes animaux' }}</p>
+                <p>Match le {{ match.createdAt|date('d/m/Y') }}</p>
+                <a class="button" href="{{ path('app_chat', {id: pet.id}) }}">Chatter</a>
+            </article>
+        {% else %}
+            <p>Pas encore de matches. <a href="{{ path('app_swipe') }}">Continuer a swiper</a></p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

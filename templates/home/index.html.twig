@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PetMatch Symfony - Accueil{% endblock %}
+
+{% block body %}
+<section class="hero">
+    <div>
+        <h1>Rencontres intelligentes pour animaux de compagnie</h1>
+        <p>Crée un profil, découvre les animaux proches de toi, matche et discute avec leurs propriétaires.</p>
+        <div class="actions">
+            {% if user %}
+                <a class="button" href="{{ path('app_swipe') }}">Commencer à swiper</a>
+                <a class="button ghost" href="{{ path('app_profile') }}">Mon profil</a>
+            {% else %}
+                <a class="button" href="{{ path('app_signup') }}">Créer un compte</a>
+                <a class="button ghost" href="{{ path('app_login') }}">Se connecter</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Profils récents</h2>
+    <div class="grid">
+        {% for pet in pets %}
+            <article class="card">
+                <div class="pet-photo">{{ pet.espece|capitalize }}</div>
+                <h3>{{ pet.nom }}</h3>
+                <p>{{ pet.race ?: pet.espece }} · {{ pet.age ?: '?' }} ans · {{ pet.ville ?: 'Tunisie' }}</p>
+            </article>
+        {% else %}
+            <p>Aucun profil animal pour le moment.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

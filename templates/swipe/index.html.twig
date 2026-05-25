@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Swipe - PetMatch{% endblock %}
+
+{% block body %}
+<section>
+    <h1>Decouvrir des profils</h1>
+    <form method="get" class="filters">
+        <select name="animal" aria-label="Animal qui swipe">
+            {% for userPet in userPets %}
+                <option value="{{ userPet.id }}" {{ userPet.id == activePet.id ? 'selected' : '' }}>
+                    {{ userPet.nom }} cherche un match
+                </option>
+            {% endfor %}
+        </select>
+        <select name="espece">
+            <option value="">Toutes les especes</option>
+            <option value="chien">Chien</option>
+            <option value="chat">Chat</option>
+            <option value="oiseau">Oiseau</option>
+            <option value="lapin">Lapin</option>
+        </select>
+        <input name="ville" placeholder="Ville" value="{{ app.request.query.get('ville') }}">
+        <button type="submit">Filtrer</button>
+    </form>
+    <p class="muted">Vous swipez actuellement pour <strong>{{ activePet.nom }}</strong>.</p>
+
+    <div class="grid">
+        {% for pet in pets %}
+            <article class="card">
+                <div class="pet-photo">{{ pet.espece|capitalize }}</div>
+                <h2>{{ pet.nom }}</h2>
+                <p>{{ pet.race ?: pet.espece }} - {{ pet.age ?: '?' }} ans - {{ pet.ville ?: 'Tunisie' }}</p>
+                <p>{{ pet.bio }}</p>
+                <form method="post" class="inline-actions">
+                    <input type="hidden" name="owner_pet_id" value="{{ activePet.id }}">
+                    <input type="hidden" name="pet_id" value="{{ pet.id }}">
+                    <button name="decision" value="skip" class="button ghost">Non</button>
+                    <button name="decision" value="like">Oui</button>
+                </form>
+            </article>
+        {% else %}
+            <p>Aucun profil disponible avec ces filtres.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

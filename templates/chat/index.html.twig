@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat avec {{ pet.nom }} - PetMatch{% endblock %}
+
+{% block body %}
+<section class="chat">
+    <aside class="card">
+        <div class="pet-photo">{{ pet.espece|capitalize }}</div>
+        <h1>{{ pet.nom }}</h1>
+        <p>{{ pet.race ?: pet.espece }} · {{ pet.ville }}</p>
+        <a href="{{ path('app_matches') }}">Retour aux matches</a>
+    </aside>
+    <article class="panel chat-panel">
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.sender.id == user.id ? 'sent' : 'received' }}">
+                    <p>{{ message.content }}</p>
+                    <span>{{ message.createdAt|date('H:i') }}</span>
+                </div>
+            {% else %}
+                <p class="muted">Aucun message pour le moment.</p>
+            {% endfor %}
+        </div>
+        <form method="post" class="chat-form">
+            <input name="message" placeholder="Écrire un message..." autocomplete="off" required>
+            <button type="submit">Envoyer</button>
+        </form>
+    </article>
+</section>
+{% endblock %}
