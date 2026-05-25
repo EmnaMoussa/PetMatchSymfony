@@ -15,8 +15,11 @@ class MatchController extends AbstractController
     public function matches(EntityManagerInterface $em, SessionUser $sessionUser): Response
     {
         $user = $sessionUser->requireLogin();
-        if (!$user) return $this->redirectToRoute('app_login');
-
+        if (!$user) {
+        return $this->render('pages/access_denied.html.twig', [
+            'user' => null,
+        ]);
+        }
         return $this->render('matches/index.html.twig', [
             'user' => $user,
             'matches' => $em->getRepository(PetMatch::class)->findBy(['user' => $user], ['id' => 'DESC']),
