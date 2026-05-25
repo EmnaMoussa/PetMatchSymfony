@@ -17,8 +17,11 @@ class ChatController extends AbstractController
     public function chat(Pet $pet, Request $request, EntityManagerInterface $em, SessionUser $sessionUser): Response
     {
         $user = $sessionUser->requireLogin();
-        if (!$user) return $this->redirectToRoute('app_login');
-
+        if (!$user) {
+        return $this->render('pages/access_denied.html.twig', [
+            'user' => null,
+        ]);
+    }
         $receiver = $pet->getOwner();
         if (!$receiver) return $this->redirectToRoute('app_matches');
 
