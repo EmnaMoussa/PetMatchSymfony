@@ -44,12 +44,27 @@ class SwipeController extends AbstractController
                 if (!$em->getRepository(PetLike::class)->findOneBy(['ownerPet' => $activePet, 'pet' => $pet])) {
                     $em->persist((new PetLike())->setUser($user)->setOwnerPet($activePet)->setPet($pet));
                 }
-                if (!$em->getRepository(PetMatch::class)->findOneBy(['ownerPet' => $activePet, 'pet' => $pet])) {
-                    $em->persist((new PetMatch())->setUser($user)->setOwnerPet($activePet)->setPet($pet));
-                }
-                $em->flush();
-                $this->addFlash('success', $activePet->getNom() . ' a un nouveau match avec ' . $pet->getNom() . ' !');
-            }
+                $reverseLike = $em->getRepository(PetLike::class)->findOneBy([
+    'ownerPet' => $pet,
+    'pet' => $activePet,
+]);
+
+if ($reverseLike) {
+    if (!$em->getRepository(PetMatch::class)->findOneBy(['ownerPet' => $activePet, 'pet' => $pet])) {
+        $em->persist((new PetMatch())->setUser($user)->setOwnerPet($activePet)->setPet($pet));
+    }
+
+    if (!$em->getRepository(PetMatch::class)->findOneBy(['ownerPet' => $pet, 'pet' => $activePet])) {
+        $em->persist((new PetMatch())->setUser($pet->getOwner())->setOwnerPet($pet)->setPet($activePet));
+    }
+
+    $this->addFlash('success', $activePet->getNom() . ' a un nouveau match avec ' . $pet->getNom() . ' !');
+} else {
+    $this->addFlash('success', 'Like enregistre. Le match apparaitra si l autre proprietaire vous like aussi.');
+}
+
+$em->flush();
+                
             return $this->redirectToRoute('app_swipe', ['animal' => $activePet->getId()]);
         }
 
