@@ -18,8 +18,11 @@ class SwipeController extends AbstractController
     public function swipe(Request $request, EntityManagerInterface $em, SessionUser $sessionUser): Response
     {
         $user = $sessionUser->requireLogin();
-        if (!$user) return $this->redirectToRoute('app_login');
-
+        if (!$user) {
+        return $this->render('pages/access_denied.html.twig', [
+            'user' => null,
+        ]);
+        }
         $userPets = $em->getRepository(Pet::class)->findBy(['owner' => $user], ['id' => 'ASC']);
         if (!$userPets) {
             $this->addFlash('error', 'Ajoutez au moins un animal avant de swiper.');
