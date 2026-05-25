@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact - PetMatch{% endblock %}
+
+{% block body %}
+<section class="split-page">
+    <div>
+        <h1>Nous contacter</h1>
+        <p>Vous avez une question, un probleme ou une suggestion ? Notre equipe est la pour vous aider.</p>
+        <h2>Email</h2>
+        <p><a href="mailto:contact@petmatch.tn">contact@petmatch.tn</a></p>
+        <h2>Telephone</h2>
+        <p>+216 00 000 000<br>Du lundi au vendredi, 9h-17h</p>
+        <h2>Adresse</h2>
+        <p>PetMatch, INSAT, Centre Urbain Nord, Tunis 1080, Tunisie</p>
+    </div>
+    <form method="post" class="panel form-grid">
+        <label>Nom <input name="nom" required></label>
+        <label>Email <input type="email" name="email" required></label>
+        <label class="full">Message <textarea name="message" rows="6" required></textarea></label>
+        <button type="submit">Envoyer</button>
+    </form>
+</section>
+{% endblock %}

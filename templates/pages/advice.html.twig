@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conseils - PetMatch{% endblock %}
+
+{% block body %}
+<section>
+    <h1>Conseils pour vos animaux</h1>
+    <div class="advice-list">
+        {% set conseils = [
+            ['Prepare le profil de ton animal', 'Avant de chercher un match, assure-toi que le profil de ton animal est complet : une belle photo, sa race, son age et sa personnalite.', 'conseil.webp'],
+            ['Rencontre dans un lieu public', 'Apres un match, organise la premiere rencontre entre les animaux dans un parc ou un espace ouvert.', 'conseil2.webp'],
+            ['Verifie la compatibilite', 'Renseigne-toi sur le caractere et les besoins de la race de l autre animal avant une rencontre.', 'conseil3.webp'],
+            ['Vaccins a jour', 'Avant toute rencontre, verifie que les vaccins de ton animal sont a jour.', 'conseil4.jpg'],
+            ['Utilise une vraie photo', 'Une photo recente et de bonne qualite donne confiance aux autres proprietaires.', 'conseil5.jpg'],
+            ['Communique bien', 'Discutez du comportement de vos animaux avant la rencontre pour eviter les mauvaises surprises.', 'conseil6.webp']
+        ] %}
+
+        {% for conseil in conseils %}
+            <article class="advice-item">
+                <img src="{{ asset('images/' ~ conseil[2]) }}" alt="{{ conseil[0] }}">
+                <div>
+                    <h2>{{ conseil[0] }}</h2>
+                    <p>{{ conseil[1] }}</p>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}PetMatch Symfony{% endblock %}</title>
+    <title>{% block title %}PetMatch{% endblock %}</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
 <header class="topbar">
-    <a class="brand" href="{{ path('app_home') }}">PetMatch 🐾</a>
+    <a class="brand" href="{{ path('app_home') }}">PetMatch</a>
     <nav>
         <a href="{{ path('app_home') }}">Accueil</a>
+        {% if user is defined and user %}
+            <a href="{{ path('app_profile') }}">Profil</a>
+        {% endif %}
         <a href="{{ path('app_swipe') }}">Swipe</a>
         <a href="{{ path('app_matches') }}">Matches</a>
         {% if user is defined and user %}
-            <a href="{{ path('app_profile') }}">Profil</a>
-            <a href="{{ path('app_logout') }}">Déconnexion</a>
+            <a href="{{ path('app_logout') }}">Deconnexion</a>
         {% else %}
             <a href="{{ path('app_login') }}">Connexion</a>
             <a class="button small" href="{{ path('app_signup') }}">Inscription</a>
@@ -34,7 +36,12 @@
 </main>
 
 <footer>
-    <p>Adoptez, aimez, protégez — PetMatch Symfony</p>
+    <p>Adoptez, aimez, protegez - PetMatch</p>
+    <div class="footer-links">
+        <a href="{{ path('app_advice') }}">Conseils</a>
+        <a href="{{ path('app_privacy') }}">Confidentialite</a>
+        <a href="{{ path('app_contact') }}">Nous contacter</a>
+    </div>
 </footer>
 </body>
 </html>

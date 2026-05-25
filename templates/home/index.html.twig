@@ -1,32 +1,52 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}PetMatch Symfony - Accueil{% endblock %}
+{% block title %}PetMatch - Accueil{% endblock %}
 
 {% block body %}
 <section class="hero">
     <div>
-        <h1>Rencontres intelligentes pour animaux de compagnie</h1>
-        <p>Crée un profil, découvre les animaux proches de toi, matche et discute avec leurs propriétaires.</p>
+        <h1>Trouve l'ame soeur de ton animal</h1>
+        <p>Parce que ton animal merite aussi de trouver son grand amour. Cree son profil, swipe sur d'autres animaux et laisse la magie operer.</p>
         <div class="actions">
             {% if user %}
-                <a class="button" href="{{ path('app_swipe') }}">Commencer à swiper</a>
+                <a class="button" href="{{ path('app_swipe') }}">Commencer a swiper</a>
                 <a class="button ghost" href="{{ path('app_profile') }}">Mon profil</a>
             {% else %}
-                <a class="button" href="{{ path('app_signup') }}">Créer un compte</a>
+                <a class="button" href="{{ path('app_signup') }}">Creer un compte</a>
                 <a class="button ghost" href="{{ path('app_login') }}">Se connecter</a>
             {% endif %}
         </div>
     </div>
+    <img class="hero-image" src="{{ asset('images/animaux.jpg') }}" alt="Animaux PetMatch">
+</section>
+
+<section class="features">
+    <article class="feature-card">
+        <h2>Cree un profil</h2>
+        <p>Presente ton animal avec sa photo, sa race, son age et sa personnalite.</p>
+    </article>
+    <article class="feature-card">
+        <h2>Swipe</h2>
+        <p>Fais defiler les profils et choisis les animaux compatibles.</p>
+    </article>
+    <article class="feature-card">
+        <h2>C'est un match</h2>
+        <p>Quand deux proprietaires se likent mutuellement, le match apparait.</p>
+    </article>
+    <article class="feature-card">
+        <h2>Discutez</h2>
+        <p>Apres le match, chattez avec le proprietaire et organisez une rencontre.</p>
+    </article>
 </section>
 
 <section>
-    <h2>Profils récents</h2>
+    <h2>Profils recents</h2>
     <div class="grid">
         {% for pet in pets %}
             <article class="card">
-                <div class="pet-photo">{{ pet.espece|capitalize }}</div>
+                <img class="pet-image" src="{{ asset(pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) }}" alt="{{ pet.nom }}">
                 <h3>{{ pet.nom }}</h3>
-                <p>{{ pet.race ?: pet.espece }} · {{ pet.age ?: '?' }} ans · {{ pet.ville ?: 'Tunisie' }}</p>
+                <p>{{ pet.race ?: pet.espece }} - {{ pet.age ?: '?' }} ans - {{ pet.ville ?: 'Tunisie' }}</p>
             </article>
         {% else %}
             <p>Aucun profil animal pour le moment.</p>

@@ -9,7 +9,7 @@
         <div class="pet-list">
             {% for ownedPet in pets %}
                 <article class="pet-row {{ pet.id and ownedPet.id == pet.id ? 'active' : '' }}">
-                    <div class="pet-avatar">{{ ownedPet.espece|default('animal')|slice(0, 1)|upper }}</div>
+                    <img class="pet-avatar image" src="{{ asset(ownedPet.photo starts with 'uploads/' ? ownedPet.photo : 'images/' ~ ownedPet.photo) }}" alt="{{ ownedPet.nom }}">
                     <div>
                         <strong>{{ ownedPet.nom }}</strong>
                         <span>{{ ownedPet.race ?: ownedPet.espece }} - {{ ownedPet.age ?: '?' }} ans</span>
@@ -25,17 +25,34 @@
 
     <article class="panel">
         <h1>{{ pet.id ? 'Modifier ' ~ pet.nom : 'Ajouter un animal' }}</h1>
-        <form method="post" class="form-grid">
+        <form method="post" enctype="multipart/form-data" class="form-grid">
             <input type="hidden" name="pet_id" value="{{ pet.id }}">
             <label>Prenom <input name="prenom" value="{{ user.prenom }}" required></label>
             <label>Nom <input name="nom" value="{{ user.nom }}" required></label>
             <label>Email <input type="email" name="email" value="{{ user.email }}" required></label>
             <label>Ville <input name="ville" value="{{ user.ville }}"></label>
             <label>Nom animal <input name="pet_nom" value="{{ pet.nom }}" required></label>
-            <label>Espece <input name="espece" value="{{ pet.espece ?: 'chien' }}"></label>
+            <label>Espece
+                <select name="espece">
+                    {% for espece in ['chien', 'chat', 'lapin', 'oiseau', 'poisson', 'reptile', 'autre'] %}
+                        <option value="{{ espece }}" {{ pet.espece == espece ? 'selected' : '' }}>{{ espece|capitalize }}</option>
+                    {% endfor %}
+                </select>
+            </label>
             <label>Race <input name="race" value="{{ pet.race }}"></label>
             <label>Age <input type="number" name="age" value="{{ pet.age }}" min="0" max="30"></label>
-            <label>Sexe <input name="sexe" value="{{ pet.sexe }}"></label>
+            <label>Sexe
+                <select name="sexe">
+                    <option value="Male" {{ pet.sexe == 'Male' ? 'selected' : '' }}>Male</option>
+                    <option value="Femelle" {{ pet.sexe == 'Femelle' ? 'selected' : '' }}>Femelle</option>
+                </select>
+            </label>
+            <label class="full">Photo <input type="file" name="photo" accept="image/*"></label>
+            {% if pet.id %}
+                <div class="full">
+                    <img class="profile-preview" src="{{ asset(pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) }}" alt="{{ pet.nom }}">
+                </div>
+            {% endif %}
             <label class="full">Bio <textarea name="bio" rows="4">{{ pet.bio }}</textarea></label>
             <button type="submit">Sauvegarder</button>
         </form>

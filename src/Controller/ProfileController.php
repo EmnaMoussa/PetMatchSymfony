@@ -9,11 +9,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ProfileController extends AbstractController
 {
     #[Route('/profil', name: 'app_profile')]
-    public function profile(Request $request, EntityManagerInterface $em, SessionUser $sessionUser): Response
+    public function profile(Request $request, EntityManagerInterface $em, SessionUser $sessionUser, SluggerInterface $slugger): Response
     {
         $user = $sessionUser->requireLogin();
         if (!$user) return $this->redirectToRoute('app_login');
@@ -49,6 +50,15 @@ class ProfileController extends AbstractController
                 ->setSexe((string)$request->request->get('sexe', ''))
                 ->setVille($user->getVille())
                 ->setBio(trim((string)$request->request->get('bio')) ?: null);
+
+            $photo = $request->files->get('photo');
+            if ($photo && $photo->isValid()) {
+                $originalName = pathinfo((string)$photo->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeName = strtolower((string)$slugger->slug($originalName ?: $pet->getNom()));
+                $fileName = $safeName . '-' . uniqid() . '.' . ($photo->guessExtension() ?: 'jpg');
+                $photo->move($this->getParameter('kernel.project_dir') . '/public/uploads', $fileName);
+                $pet->setPhoto('uploads/' . $fileName);
+            }
 
             $em->persist($pet);
             $em->flush();

@@ -15,10 +15,9 @@
         </select>
         <select name="espece">
             <option value="">Toutes les especes</option>
-            <option value="chien">Chien</option>
-            <option value="chat">Chat</option>
-            <option value="oiseau">Oiseau</option>
-            <option value="lapin">Lapin</option>
+            {% for espece in ['chien', 'chat', 'lapin', 'oiseau', 'poisson', 'reptile', 'autre'] %}
+                <option value="{{ espece }}" {{ app.request.query.get('espece') == espece ? 'selected' : '' }}>{{ espece|capitalize }}</option>
+            {% endfor %}
         </select>
         <input name="ville" placeholder="Ville" value="{{ app.request.query.get('ville') }}">
         <button type="submit">Filtrer</button>
@@ -27,8 +26,8 @@
 
     <div class="grid">
         {% for pet in pets %}
-            <article class="card">
-                <div class="pet-photo">{{ pet.espece|capitalize }}</div>
+            <article class="card swipe-card">
+                <img class="pet-image large" src="{{ asset(pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) }}" alt="{{ pet.nom }}">
                 <h2>{{ pet.nom }}</h2>
                 <p>{{ pet.race ?: pet.espece }} - {{ pet.age ?: '?' }} ans - {{ pet.ville ?: 'Tunisie' }}</p>
                 <p>{{ pet.bio }}</p>
