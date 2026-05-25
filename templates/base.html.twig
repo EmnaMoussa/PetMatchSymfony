@@ -10,18 +10,17 @@
 <header class="topbar">
     <a class="brand" href="{{ path('app_home') }}">PetMatch</a>
     <nav>
-        <a href="{{ path('app_home') }}">Accueil</a>
-        {% if user is defined and user %}
-            <a href="{{ path('app_profile') }}">Profil</a>
-        {% endif %}
+    <a href="{{ path('app_home') }}">Accueil</a>
+
+    {% if user is defined and user %}
+        <a href="{{ path('app_profile') }}">Profil</a>
         <a href="{{ path('app_swipe') }}">Swipe</a>
         <a href="{{ path('app_matches') }}">Matches</a>
-        {% if user is defined and user %}
-            <a href="{{ path('app_logout') }}">Deconnexion</a>
-        {% else %}
-            <a href="{{ path('app_login') }}">Connexion</a>
-            <a class="button small" href="{{ path('app_signup') }}">Inscription</a>
-        {% endif %}
+        <a href="{{ path('app_logout') }}">Deconnexion</a>
+    {% else %}
+        <a href="{{ path('app_login') }}">Connexion</a>
+        <a class="button small" href="{{ path('app_signup') }}">Inscription</a>
+    {% endif %}
     </nav>
 </header>
 
