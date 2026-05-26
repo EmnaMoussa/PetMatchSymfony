@@ -9,7 +9,7 @@
         {% for match in matches %}
             {% set pet = match.pet %}
             <article class="card">
-                <div class="pet-photo">{{ pet.espece|capitalize }}</div>
+                <img class="pet-image" src="{{ asset(pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) }}" alt="{{ pet.nom }}">
                 <h2>{{ pet.nom }}</h2>
                 <p>{{ pet.race ?: pet.espece }} - {{ pet.age ?: '?' }} ans - {{ pet.ville ?: 'Tunisie' }}</p>
                 <p class="muted">Pour {{ match.ownerPet ? match.ownerPet.nom : 'un de mes animaux' }}</p>

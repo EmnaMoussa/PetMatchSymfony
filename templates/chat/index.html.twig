@@ -5,13 +5,32 @@
 {% block body %}
 <section class="chat">
     <aside class="card">
-        <div class="pet-photo">{{ pet.espece|capitalize }}</div>
-        <h1>{{ pet.nom }}</h1>
-        <p>{{ pet.race ?: pet.espece }} · {{ pet.ville }}</p>
+        <h1>Conversations</h1>
+        <div class="pet-list">
+            {% for item in matches %}
+                {% set matchedPet = item.pet %}
+                <a class="pet-row {{ matchedPet.id == pet.id ? 'active' : '' }}" href="{{ path('app_chat', {id: matchedPet.id}) }}">
+                    <img class="pet-avatar image" src="{{ asset(matchedPet.photo starts with 'uploads/' ? matchedPet.photo : 'images/' ~ matchedPet.photo) }}" alt="{{ matchedPet.nom }}">
+                    <strong>{{ matchedPet.nom }}</strong>
+                    <span>{{ matchedPet.race ?: matchedPet.espece }}</span>
+                </a>
+            {% else %}
+                <p class="muted">Aucune conversation disponible.</p>
+            {% endfor %}
+        </div>
         <a href="{{ path('app_matches') }}">Retour aux matches</a>
     </aside>
+
     <article class="panel chat-panel">
-        <div class="messages">
+        <div class="chat-heading">
+            <img class="pet-avatar image" src="{{ asset(pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) }}" alt="{{ pet.nom }}">
+            <div>
+                <h1>{{ pet.nom }}</h1>
+                <p class="muted">{{ pet.race ?: pet.espece }} - {{ pet.ville ?: 'Tunisie' }}</p>
+            </div>
+        </div>
+
+        <div class="messages" id="messages">
             {% for message in messages %}
                 <div class="message {{ message.sender.id == user.id ? 'sent' : 'received' }}">
                     <p>{{ message.content }}</p>
@@ -21,10 +40,18 @@
                 <p class="muted">Aucun message pour le moment.</p>
             {% endfor %}
         </div>
+
         <form method="post" class="chat-form">
-            <input name="message" placeholder="Écrire un message..." autocomplete="off" required>
+            <input name="message" placeholder="Ecrire un message..." autocomplete="off" required>
             <button type="submit">Envoyer</button>
         </form>
     </article>
 </section>
+
+<script>
+    var messages = document.getElementById('messages');
+    if (messages) {
+        messages.scrollTop = messages.scrollHeight;
+    }
+</script>
 {% endblock %}
