@@ -90,6 +90,7 @@ class ChatController extends AbstractController
                 $em->persist((new Notification())
                     ->setUser($receiver)
                     ->setPetMatch($notificationMatch)
+                    ->setType('message')
                     ->setMessage($user->getFullName() . ' vous a envoye un message.'));
 
                 $em->flush();
@@ -101,6 +102,7 @@ class ChatController extends AbstractController
         $unreadNotifications = $em->getRepository(Notification::class)->findBy([
             'user' => $user,
             'petMatch' => $conversationMatches,
+            'type' => 'message',
             'readAt' => null,
         ]);
         foreach ($unreadNotifications as $notification) {

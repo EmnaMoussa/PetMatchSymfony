@@ -23,20 +23,26 @@ class NotificationExtension extends AbstractExtension
         ];
     }
 
-    public function getUnreadCount(): int
+    public function getUnreadCount(?string $type = null): int
     {
         $user = $this->security->getUser();
         if (!$user instanceof User) {
             return 0;
         }
 
-        return (int)$this->entityManager->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('COUNT(n.id)')
             ->from(Notification::class, 'n')
             ->where('n.user = :user')
             ->andWhere('n.readAt IS NULL')
-            ->setParameter('user', $user)
-            ->getQuery()
+            ->setParameter('user', $user);
+
+        if ($type) {
+            $qb->andWhere('n.type = :type')
+                ->setParameter('type', $type);
+        }
+
+        return (int)$qb->getQuery()
             ->getSingleScalarResult();
     }
 }

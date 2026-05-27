@@ -22,6 +22,9 @@ class Notification
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?PetMatch $petMatch = null;
 
+    #[ORM\Column(length: 40)]
+    private string $type = 'match';
+
     #[ORM\Column(length: 255)]
     private ?string $message = null;
 
@@ -66,6 +69,17 @@ class Notification
     public function getMessage(): ?string
     {
         return $this->message;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+        return $this;
     }
 
     public function setMessage(string $message): static

@@ -21,13 +21,21 @@
                         <li>
                             <a href="{{ path('app_matches') }}" class="lien-prive">
                                 Matches
-                                {% set unreadCount = unread_notifications_count() %}
-                                {% if unreadCount > 0 %}
-                                    <span class="notif-badge">{{ unreadCount }}</span>
+                                {% set matchUnreadCount = unread_notifications_count('match') %}
+                                {% if matchUnreadCount > 0 %}
+                                    <span class="notif-badge">{{ matchUnreadCount }}</span>
                                 {% endif %}
                             </a>
                         </li>
-                        <li><a href="{{ path('app_chat_index') }}" class="lien-prive">Chat</a></li>
+                        <li>
+                            <a href="{{ path('app_chat_index') }}" class="lien-prive">
+                                Chat
+                                {% set messageUnreadCount = unread_notifications_count('message') %}
+                                {% if messageUnreadCount > 0 %}
+                                    <span class="notif-badge">{{ messageUnreadCount }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
                     {% endif %}
                     <li><a href="{{ path('app_advice') }}">Conseils</a></li>
                 </ul>

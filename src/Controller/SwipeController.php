@@ -108,6 +108,7 @@ class SwipeController extends AbstractController
                     $em->persist((new Notification())
                         ->setUser($user)
                         ->setPetMatch($currentUserMatch)
+                        ->setType('match')
                         ->setMessage('Nouveau match entre ' . $activePet->getNom() . ' et ' . $pet->getNom()));
                 }
 
@@ -115,6 +116,7 @@ class SwipeController extends AbstractController
                     $em->persist((new Notification())
                         ->setUser($pet->getOwner())
                         ->setPetMatch($otherUserMatch)
+                        ->setType('match')
                         ->setMessage('Nouveau match entre ' . $pet->getNom() . ' et ' . $activePet->getNom()));
                 }
 
@@ -182,6 +184,7 @@ class SwipeController extends AbstractController
         return (bool)$em->getRepository(Notification::class)->findOneBy([
             'user' => $user,
             'petMatch' => $match,
+            'type' => 'match',
         ]);
     }
 }

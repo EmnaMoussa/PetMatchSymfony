@@ -22,7 +22,11 @@ class MatchController extends AbstractController
             ]);
         }
 
-        $notifications = $em->getRepository(Notification::class)->findBy(['user' => $user, 'readAt' => null]);
+        $notifications = $em->getRepository(Notification::class)->findBy([
+            'user' => $user,
+            'type' => 'match',
+            'readAt' => null,
+        ]);
         foreach ($notifications as $notification) {
             $notification->setReadAt(new \DateTime());
         }
