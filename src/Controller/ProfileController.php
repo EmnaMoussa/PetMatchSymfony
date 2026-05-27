@@ -38,6 +38,11 @@ class ProfileController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('profile_save', (string)$request->request->get('_csrf_token'))) {
+                $this->addFlash('error', 'Formulaire expire, veuillez recommencer.');
+                return $this->redirectToRoute('app_profile');
+            }
+
             $user
                 ->setPrenom(trim((string)$request->request->get('prenom')))
                 ->setNom(trim((string)$request->request->get('nom')))
@@ -56,6 +61,16 @@ class ProfileController extends AbstractController
 
             $photo = $request->files->get('photo');
             if ($photo && $photo->isValid()) {
+                if (!in_array($photo->getMimeType(), ['image/jpeg', 'image/png', 'image/webp'], true)) {
+                    $this->addFlash('error', 'Format photo invalide. Utilisez JPG, PNG ou WEBP.');
+                    return $this->redirectToRoute('app_profile');
+                }
+
+                if ($photo->getSize() > 2 * 1024 * 1024) {
+                    $this->addFlash('error', 'La photo ne doit pas depasser 2 Mo.');
+                    return $this->redirectToRoute('app_profile');
+                }
+
                 $originalName = pathinfo((string)$photo->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeName = strtolower((string)$slugger->slug($originalName ?: $pet->getNom()));
                 $fileName = $safeName . '-' . uniqid() . '.' . ($photo->guessExtension() ?: 'jpg');

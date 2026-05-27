@@ -5,8 +5,6 @@ namespace App\Service;
 use App\Entity\ContactSubmission;
 use App\Repository\ContactSubmissionRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 
 /**
  * Contact Service
@@ -19,7 +17,6 @@ class ContactService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ContactSubmissionRepository $contactRepository,
-        private MailerInterface $mailer,
         private string $adminEmail = 'support@petmatch.com',
     ) {}
 
@@ -41,9 +38,6 @@ class ContactService
         $this->entityManager->persist($submission);
         $this->entityManager->flush();
 
-        // Send notification email to admin
-        $this->notifyAdmin($submission);
-
         return $submission;
     }
 
@@ -52,17 +46,6 @@ class ContactService
      */
     private function notifyAdmin(ContactSubmission $submission): void
     {
-        try {
-            $email = (new Email())
-                ->from('noreply@petmatch.com')
-                ->to($this->adminEmail)
-                ->subject('New Contact Submission: ' . $submission->getSubject())
-                ->html($this->renderNotificationTemplate($submission));
-
-            $this->mailer->send($email);
-        } catch (\Exception $e) {
-            // Log error but don't fail
-        }
     }
 
     /**
@@ -104,9 +87,6 @@ class ContactService
         $submission->setRespondedAt(new \DateTime());
         $this->entityManager->flush();
 
-        // Send reply email to user
-        $this->sendReplyEmail($submission);
-
         return $submission;
     }
 
@@ -115,17 +95,6 @@ class ContactService
      */
     private function sendReplyEmail(ContactSubmission $submission): void
     {
-        try {
-            $email = (new Email())
-                ->from('support@petmatch.com')
-                ->to($submission->getEmail())
-                ->subject('Re: ' . $submission->getSubject())
-                ->html($this->renderReplyTemplate($submission));
-
-            $this->mailer->send($email);
-        } catch (\Exception $e) {
-            // Log error but don't fail
-        }
     }
 
     /**

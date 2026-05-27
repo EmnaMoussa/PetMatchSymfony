@@ -30,6 +30,11 @@ class PageController extends AbstractController
     public function contact(Request $request, SessionUser $sessionUser): Response
     {
         if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('contact', (string)$request->request->get('_csrf_token'))) {
+                $this->addFlash('error', 'Formulaire expire, veuillez recommencer.');
+                return $this->redirectToRoute('app_contact');
+            }
+
             $this->addFlash('success', 'Message envoye. Nous vous repondrons bientot.');
             return $this->redirectToRoute('app_contact');
         }

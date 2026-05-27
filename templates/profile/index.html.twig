@@ -26,6 +26,7 @@
     <article class="panel">
         <h1>{{ pet.id ? 'Modifier ' ~ pet.nom : 'Ajouter un animal' }}</h1>
         <form method="post" enctype="multipart/form-data" class="form-grid">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('profile_save') }}">
             <input type="hidden" name="pet_id" value="{{ pet.id }}">
             <label>Prenom <input name="prenom" value="{{ user.prenom }}" required></label>
             <label>Nom <input name="nom" value="{{ user.nom }}" required></label>

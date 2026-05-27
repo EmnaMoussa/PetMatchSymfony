@@ -59,6 +59,11 @@ class ChatController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('chat_message', (string)$request->request->get('_csrf_token'))) {
+                $this->addFlash('error', 'Formulaire expire, veuillez recommencer.');
+                return $this->redirectToRoute('app_chat', ['id' => $pet->getId()]);
+            }
+
             $content = trim((string)$request->request->get('message'));
             if ($content !== '') {
                 $message = (new Message())

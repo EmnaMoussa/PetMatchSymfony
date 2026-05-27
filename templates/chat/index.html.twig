@@ -36,10 +36,12 @@
             </div>
 
             <div class="message-form" id="messageForm" style="display: none;">
-                <form onsubmit="sendMessage(event)">
+                <form method="post" action="{{ path('app_chat', {id: pet.id}) }}" onsubmit="sendMessage(event)">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('chat_message') }}">
                     <input 
                         type="text" 
                         id="messageInput" 
+                        name="message"
                         placeholder="Type a message..." 
                         autocomplete="off"
                     >
@@ -266,14 +268,12 @@ async function openConversation(recipientId) {
 }
 
 function sendMessage(event) {
-    event.preventDefault();
     const input = document.getElementById('messageInput');
     const message = input.value.trim();
 
-    if (!message) return;
-
-    // TODO: Send message via API
-    // input.value = '';
+    if (!message) {
+        event.preventDefault();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', loadConversations);
