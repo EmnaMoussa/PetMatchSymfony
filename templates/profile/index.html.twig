@@ -9,7 +9,7 @@
     <div class="profil-layout">
     <article class="profil-card">
         {% if pet.id %}
-            <img src="{{ asset(pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) }}" alt="photo de profil" width="300" height="300">
+            <img src="{{ asset(pet.photo ? (pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) : 'images/default-profile.svg') }}" alt="photo de profil" width="300" height="300">
         {% endif %}
         <h3>{{ pet.id ? user.prenom ~ ' ' ~ user.nom : 'Profil vide' }}</h3>
         <p>{{ pet.id ? pet.nom ~ ' - ' ~ pet.espece|capitalize : 'Completez le formulaire pour creer votre profil.' }}</p>
@@ -61,7 +61,7 @@
                 <div class="form-group">
                     <label>Photo de l'animal</label>
                     {% if pet.id %}
-                        <img class="profile-preview" src="{{ asset(pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) }}" alt="{{ pet.nom }}">
+                        <img class="profile-preview" src="{{ asset(pet.photo ? (pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) : 'images/default-profile.svg') }}" alt="{{ pet.nom }}">
                     {% endif %}
                     <input type="file" name="photo" accept="image/jpeg,image/png,image/webp">
                 </div>

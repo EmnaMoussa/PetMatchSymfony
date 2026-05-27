@@ -34,7 +34,7 @@
     {% set currentPet = pets|first %}
     <div id="carte-animal" class="swipe-card">
         {% if currentPet %}
-            <img class="animal-photo" src="{{ asset(currentPet.photo starts with 'uploads/' ? currentPet.photo : 'images/' ~ currentPet.photo) }}" alt="{{ currentPet.nom }}">
+            <img class="animal-photo" src="{{ asset(currentPet.photo ? (currentPet.photo starts with 'uploads/' ? currentPet.photo : 'images/' ~ currentPet.photo) : 'images/default-profile.svg') }}" alt="{{ currentPet.nom }}">
             <div class="swipe-info">
                 <h3 class="animal-nom">{{ currentPet.nom }}</h3>
                 <div class="swipe-tags">

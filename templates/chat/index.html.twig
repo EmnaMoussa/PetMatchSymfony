@@ -9,7 +9,7 @@
             <h2>Messages</h2>
             {% for item in matches %}
                 <a class="contact {{ item.id == match.id ? 'active' : '' }}" href="{{ path('app_chat', {id: item.id}) }}">
-                    <img src="{{ asset(item.pet.photo starts with 'uploads/' ? item.pet.photo : 'images/' ~ item.pet.photo) }}" alt="{{ item.pet.nom }}">
+                    <img src="{{ asset(item.pet.photo ? (item.pet.photo starts with 'uploads/' ? item.pet.photo : 'images/' ~ item.pet.photo) : 'images/default-profile.svg') }}" alt="{{ item.pet.nom }}">
                     <div>
                         <h5>{{ item.pet.nom }}</h5>
                         <p>{{ item.ownerPet.nom }} avec {{ item.pet.owner.prenom }}</p>
@@ -22,7 +22,7 @@
 
         <div id="colonne-droite">
             <div id="chat-header">
-                <img src="{{ asset(pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) }}" alt="{{ pet.nom }}">
+                <img src="{{ asset(pet.photo ? (pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) : 'images/default-profile.svg') }}" alt="{{ pet.nom }}">
                 <div>
                     <h3>{{ pet.nom }}</h3>
                     <p id="conv-sous-titre">Match avec {{ match.ownerPet.nom }} - {{ pet.owner.fullName }}</p>

@@ -10,7 +10,7 @@
     <div id="liste-matches">
         {% for match in matches %}
             <div class="match-card">
-                <img src="{{ asset(match.pet.photo starts with 'uploads/' ? match.pet.photo : 'images/' ~ match.pet.photo) }}" alt="{{ match.pet.nom }}">
+                <img src="{{ asset(match.pet.photo ? (match.pet.photo starts with 'uploads/' ? match.pet.photo : 'images/' ~ match.pet.photo) : 'images/default-profile.svg') }}" alt="{{ match.pet.nom }}">
                 <div class="match-info">
                     <h3>{{ match.ownerPet.nom }} et {{ match.pet.nom }}</h3>
                     <p>{{ match.pet.owner.fullName }}</p>

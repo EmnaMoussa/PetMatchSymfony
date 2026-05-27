@@ -192,7 +192,7 @@ class Pet
 
     public function getPhoto(): string
     {
-        return $this->image ?: 'profil1.webp';
+        return $this->image ?: 'default-profile.svg';
     }
 
     public function setPhoto(string $photo): static
