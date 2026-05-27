@@ -62,7 +62,7 @@ class ChatController extends AbstractController
         if ($request->isMethod('POST')) {
             if (!$this->isCsrfTokenValid('chat_message', (string)$request->request->get('_csrf_token'))) {
                 $this->addFlash('error', 'Formulaire expire, veuillez recommencer.');
-                return $this->redirectToRoute('app_chat', ['id' => $pet->getId()]);
+                return $this->redirectToRoute('app_chat', ['id' => $match->getId()]);
             }
 
             $content = trim((string)$request->request->get('message'));
@@ -80,11 +80,21 @@ class ChatController extends AbstractController
             return $this->redirectToRoute('app_chat', ['id' => $match->getId()]);
         }
 
+        $conversationMatches = [$match];
+        $reverseMatch = $em->getRepository(PetMatch::class)->findOneBy([
+            'ownerPet' => $match->getPet(),
+            'pet' => $match->getOwnerPet(),
+        ]);
+
+        if ($reverseMatch) {
+            $conversationMatches[] = $reverseMatch;
+        }
+
         $messages = $em->createQueryBuilder()
             ->select('m')
             ->from(Message::class, 'm')
-            ->where('m.petMatch = :match')
-            ->setParameter('match', $match)
+            ->where('m.petMatch IN (:matches)')
+            ->setParameter('matches', $conversationMatches)
             ->orderBy('m.id', 'ASC')
             ->getQuery()
             ->getResult();
