@@ -1,84 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}PetMatch - Find Your Pet's Perfect Friend{% endblock %}</title>
+    <title>{% block title %}PetMatch{% endblock %}</title>
     {% block stylesheets %}
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     {% endblock %}
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-container">
-            <div class="navbar-logo">
-                <a href="{{ path('home') }}">🐾 PetMatch</a>
-            </div>
-            <ul class="nav-menu">
-                {% if app.user %}
-                    <li><a href="{{ path('dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ path('swipe') }}">Swipe</a></li>
-                    <li><a href="{{ path('matches') }}">Matches</a></li>
-                    <li><a href="{{ path('chat') }}">Chat</a></li>
-                    <li><a href="{{ path('advice') }}">Advice</a></li>
-                    <li><a href="{{ path('profile') }}">Profile</a></li>
-                    <li><a href="{{ path('logout') }}">Logout</a></li>
-                {% else %}
-                    <li><a href="{{ path('login') }}">Login</a></li>
-                    <li><a href="{{ path('register') }}">Register</a></li>
-                {% endif %}
-                <li><a href="{{ path('contact') }}">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
+    <header class="topbar">
+        <a class="brand" href="{{ path('app_home') }}">PetMatch</a>
+        <nav>
+            <a href="{{ path('app_home') }}">Accueil</a>
+            {% if app.user %}
+                <a href="{{ path('app_profile') }}">Profil</a>
+                <a href="{{ path('app_swipe') }}">Swipe</a>
+                <a href="{{ path('app_matches') }}">
+                    Matches
+                    {% set unreadCount = unread_notifications_count() %}
+                    {% if unreadCount > 0 %}
+                        <span class="badge">{{ unreadCount }}</span>
+                    {% endif %}
+                </a>
+                <a href="{{ path('app_chat_index') }}">Chat</a>
+                <a href="{{ path('app_advice') }}">Conseils</a>
+                <a href="{{ path('app_logout') }}">Deconnexion</a>
+            {% else %}
+                <a href="{{ path('app_login') }}">Se connecter</a>
+                <a href="{{ path('app_signup') }}">S'inscrire</a>
+            {% endif %}
+            <a href="{{ path('app_contact') }}">Contact</a>
+        </nav>
+    </header>
 
-    <main class="main-content">
-        {% if app.flashes %}
-            <div class="alerts-container">
-                {% for type, messages in app.flashes %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ type }}">
-                            {{ message }}
-                            <button class="alert-close" onclick="this.parentElement.style.display='none';">×</button>
-                        </div>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        {% endif %}
+    <main>
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <p class="flash {{ type }}">{{ message }}</p>
+            {% endfor %}
+        {% endfor %}
 
         {% block content %}{% endblock %}
         {% block body %}{% endblock %}
     </main>
 
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-section">
-                <h3>PetMatch</h3>
-                <p>A social network for pet lovers</p>
-            </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="{{ path('home') }}">Home</a></li>
-                    <li><a href="{{ path('advice') }}">Pet Advice</a></li>
-                    <li><a href="{{ path('contact') }}">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Legal</h4>
-                <ul>
-                    <li><a href="{{ path('privacy') }}">Privacy Policy</a></li>
-                    <li><a href="{{ path('terms') }}">Terms of Service</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 PetMatch. All rights reserved. Created by Emna Moussa</p>
+    <footer>
+        <p>PetMatch - cree par Emna Moussa</p>
+        <div class="footer-links">
+            <a href="{{ path('app_advice') }}">Conseils</a>
+            <a href="{{ path('app_contact') }}">Contact</a>
+            <a href="{{ path('app_privacy') }}">Confidentialite</a>
         </div>
     </footer>
 
-    {% block javascripts %}
-        <script src="{{ asset('js/main.js') }}"></script>
-    {% endblock %}
+    {% block javascripts %}{% endblock %}
 </body>
 </html>

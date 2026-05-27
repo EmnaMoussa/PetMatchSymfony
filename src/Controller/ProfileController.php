@@ -54,8 +54,8 @@ class ProfileController extends AbstractController
                 ->setNom(trim((string)$request->request->get('pet_nom')))
                 ->setEspece((string)$request->request->get('espece', 'chien'))
                 ->setRace(trim((string)$request->request->get('race')) ?: null)
-                ->setAge((int)$request->request->get('age'))
-                ->setSexe((string)$request->request->get('sexe', ''))
+                ->setAge($request->request->get('age') !== '' ? (int)$request->request->get('age') : null)
+                ->setSexe(trim((string)$request->request->get('sexe')) ?: null)
                 ->setVille($user->getVille())
                 ->setBio(trim((string)$request->request->get('bio')) ?: null);
 

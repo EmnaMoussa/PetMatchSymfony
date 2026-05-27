@@ -30,11 +30,11 @@ class ChatController extends AbstractController
             return $this->redirectToRoute('app_matches');
         }
 
-        return $this->redirectToRoute('app_chat', ['id' => $firstMatch->getPet()?->getId()]);
+        return $this->redirectToRoute('app_chat', ['id' => $firstMatch->getId()]);
     }
 
     #[Route('/chat/{id}', name: 'app_chat')]
-    public function chat(Pet $pet, Request $request, EntityManagerInterface $em, SessionUser $sessionUser): Response
+    public function chat(int $id, Request $request, EntityManagerInterface $em, SessionUser $sessionUser): Response
     {
         $user = $sessionUser->requireLogin();
         if (!$user) {
@@ -44,8 +44,8 @@ class ChatController extends AbstractController
         }
 
         $match = $em->getRepository(PetMatch::class)->findOneBy([
+            'id' => $id,
             'user' => $user,
-            'pet' => $pet,
         ]);
 
         if (!$match) {
@@ -53,6 +53,7 @@ class ChatController extends AbstractController
             return $this->redirectToRoute('app_matches');
         }
 
+        $pet = $match->getPet();
         $receiver = $pet->getOwner();
         if (!$receiver) {
             return $this->redirectToRoute('app_matches');
@@ -69,21 +70,21 @@ class ChatController extends AbstractController
                 $message = (new Message())
                     ->setSender($user)
                     ->setReceiver($receiver)
+                    ->setPetMatch($match)
                     ->setContent($content);
 
                 $em->persist($message);
                 $em->flush();
             }
 
-            return $this->redirectToRoute('app_chat', ['id' => $pet->getId()]);
+            return $this->redirectToRoute('app_chat', ['id' => $match->getId()]);
         }
 
         $messages = $em->createQueryBuilder()
             ->select('m')
             ->from(Message::class, 'm')
-            ->where('(m.sender = :user AND m.receiver = :receiver) OR (m.sender = :receiver AND m.receiver = :user)')
-            ->setParameter('user', $user)
-            ->setParameter('receiver', $receiver)
+            ->where('m.petMatch = :match')
+            ->setParameter('match', $match)
             ->orderBy('m.id', 'ASC')
             ->getQuery()
             ->getResult();

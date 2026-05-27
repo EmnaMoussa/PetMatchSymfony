@@ -2,298 +2,50 @@
 
 {% block title %}Swipe - PetMatch{% endblock %}
 
-{% block content %}
-<div class="swipe-container">
-    <div class="swipe-header">
-        <h1>Find Pet Friends</h1>
-        <p>Swipe right to like, left to skip</p>
-    </div>
-
-    <div class="swipe-filters">
-        <select id="filterType" class="filter-input">
-            <option value="">All Types</option>
-            <option value="dog">Dogs</option>
-            <option value="cat">Cats</option>
-            <option value="rabbit">Rabbits</option>
-            <option value="other">Other</option>
-        </select>
-
-        <select id="filterAge" class="filter-input">
-            <option value="">All Ages</option>
-            <option value="0-2">0-2 years</option>
-            <option value="2-5">2-5 years</option>
-            <option value="5-10">5-10 years</option>
-            <option value="10+">10+ years</option>
-        </select>
-
-        <input type="text" id="filterLocation" class="filter-input" placeholder="Location">
-    </div>
-
-    <div class="swipe-card-container">
-        <div id="swipeCard" class="swipe-card">
-            <img id="petImage" src="" alt="Pet" class="pet-image">
-            <div class="pet-info">
-                <h2 id="petName"></h2>
-                <div class="pet-tags" id="petTags"></div>
-                <p id="petBio" class="pet-bio"></p>
-            </div>
+{% block body %}
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <h1>Swipe</h1>
+            <p class="muted">Les profils proposes sont filtres automatiquement sur l'espece de l'animal choisi.</p>
         </div>
-
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <h3>No More Profiles</h3>
-            <p>You've seen all available pets! Check back later.</p>
-        </div>
+        <a class="button ghost" href="{{ path('app_profile') }}">Gerer mes animaux</a>
     </div>
 
-    <div class="swipe-buttons">
-        <button id="btnSkip" class="btn btn-skip">👋 Skip</button>
-        <button id="btnLike" class="btn btn-like">❤️ Like</button>
+    <div class="pet-list">
+        {% for userPet in userPets %}
+            <a class="pet-row {{ userPet.id == activePet.id ? 'active' : '' }}" href="{{ path('app_swipe', {animal: userPet.id}) }}">
+                <img class="pet-avatar image" src="{{ asset(userPet.photo starts with 'uploads/' ? userPet.photo : 'images/' ~ userPet.photo) }}" alt="{{ userPet.nom }}">
+                <div>
+                    <strong>{{ userPet.nom }}</strong>
+                    <span>{{ userPet.espece|capitalize }} - {{ userPet.race ?: 'Race non precisee' }}</span>
+                </div>
+            </a>
+        {% endfor %}
     </div>
+</section>
 
-    <div id="matchPopup" class="match-popup" style="display: none;">
-        <div class="match-content">
-            <h2>🎉 It's a Match!</h2>
-            <p id="matchText"></p>
-            <button onclick="closeMatchPopup()" class="btn btn-primary">Continue</button>
-        </div>
-    </div>
-</div>
-
-<style>
-.swipe-container {
-    padding: 2rem;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.swipe-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.swipe-filters {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-}
-
-.filter-input {
-    flex: 1;
-    min-width: 150px;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-}
-
-.swipe-card-container {
-    position: relative;
-    height: 500px;
-    margin-bottom: 2rem;
-}
-
-.swipe-card {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
-    animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.pet-image {
-    width: 100%;
-    height: 60%;
-    object-fit: cover;
-}
-
-.pet-info {
-    padding: 1.5rem;
-    height: 40%;
-    display: flex;
-    flex-direction: column;
-}
-
-.pet-tags {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin: 0.5rem 0;
-}
-
-.pet-tags span {
-    background: #f0f0f0;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-}
-
-.swipe-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-}
-
-.btn-skip, .btn-like {
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 50%;
-    font-size: 2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 80px;
-    height: 80px;
-}
-
-.btn-skip {
-    background: #f5f5f5;
-}
-
-.btn-skip:hover {
-    background: #e0e0e0;
-    transform: scale(1.1);
-}
-
-.btn-like {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.btn-like:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.match-popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.match-content {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    text-align: center;
-    animation: popIn 0.3s ease;
-}
-
-@keyframes popIn {
-    from {
-        transform: scale(0.5);
-    }
-    to {
-        transform: scale(1);
-    }
-}
-</style>
-
-<script>
-let pets = [];
-let currentIndex = 0;
-
-async function loadPets() {
-    try {
-        const filters = new URLSearchParams();
-        const type = document.getElementById('filterType').value;
-        const age = document.getElementById('filterAge').value;
-        const location = document.getElementById('filterLocation').value;
-
-        if (type) filters.append('type', type);
-        if (age) filters.append('age', age);
-        if (location) filters.append('location', location);
-
-        const response = await fetch('/api/pets/available?' + filters.toString());
-        const data = await response.json();
-        pets = data.pets || [];
-        currentIndex = 0;
-        displayPet();
-    } catch (error) {
-        console.error('Error loading pets:', error);
-    }
-}
-
-function displayPet() {
-    if (currentIndex >= pets.length) {
-        document.getElementById('swipeCard').style.display = 'none';
-        document.getElementById('emptyState').style.display = 'flex';
-        return;
-    }
-
-    const pet = pets[currentIndex];
-    document.getElementById('petImage').src = pet.image || 'https://via.placeholder.com/600x400';
-    document.getElementById('petName').textContent = pet.name;
-    document.getElementById('petBio').textContent = pet.description || 'No description';
-
-    const tags = [
-        pet.age ? `${pet.age} years old` : '',
-        pet.breed || '',
-        pet.gender || ''
-    ].filter(Boolean);
-
-    document.getElementById('petTags').innerHTML = tags
-        .map(tag => `<span>${tag}</span>`)
-        .join('');
-}
-
-function skipPet() {
-    currentIndex++;
-    displayPet();
-}
-
-async function likePet() {
-    const pet = pets[currentIndex];
-    const targetUserId = pet.owner?.id;
-
-    try {
-        const response = await fetch('/api/swipes', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ targetUserId, isLike: true })
-        });
-
-        // const data = await response.json();
-        // if (data.matched) showMatchPopup(pet.name);
-
-        currentIndex++;
-        displayPet();
-    } catch (error) {
-        console.error('Error liking pet:', error);
-    }
-}
-
-function showMatchPopup(petName) {
-    document.getElementById('matchText').textContent = `You matched with ${petName}'s owner!`;
-    document.getElementById('matchPopup').style.display = 'flex';
-}
-
-function closeMatchPopup() {
-    document.getElementById('matchPopup').style.display = 'none';
-}
-
-document.getElementById('btnSkip').addEventListener('click', skipPet);
-document.getElementById('btnLike').addEventListener('click', likePet);
-
-document.addEventListener('DOMContentLoaded', loadPets);
-</script>
+<section class="grid swipe-grid">
+    {% for pet in pets %}
+        <article class="card swipe-card">
+            <img class="pet-image large" src="{{ asset(pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) }}" alt="{{ pet.nom }}">
+            <h2>{{ pet.nom }}</h2>
+            <p class="muted">{{ pet.espece|capitalize }} - {{ pet.race ?: 'Race non precisee' }} - {{ pet.age ?: '?' }} ans</p>
+            <p>{{ pet.bio ?: 'Aucune description pour le moment.' }}</p>
+            <p class="muted">Proprietaire: {{ pet.owner.fullName }}{% if pet.ville %} - {{ pet.ville }}{% endif %}</p>
+            <form method="post" class="inline-actions">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('swipe_action') }}">
+                <input type="hidden" name="owner_pet_id" value="{{ activePet.id }}">
+                <input type="hidden" name="pet_id" value="{{ pet.id }}">
+                <button class="ghost" type="submit" name="decision" value="skip">Passer</button>
+                <button type="submit" name="decision" value="like">Oui</button>
+            </form>
+        </article>
+    {% else %}
+        <article class="panel">
+            <h2>Aucun profil disponible</h2>
+            <p class="muted">{{ activePet.nom }} a deja vu tous les profils {{ activePet.espece }} disponibles. Les memes profils ne recommencent pas.</p>
+        </article>
+    {% endfor %}
+</section>
 {% endblock %}

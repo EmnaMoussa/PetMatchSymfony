@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\PetMatch;
+use App\Entity\Notification;
 use App\Service\SessionUser;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,13 +17,25 @@ class MatchController extends AbstractController
     {
         $user = $sessionUser->requireLogin();
         if (!$user) {
-        return $this->render('pages/access_denied.html.twig', [
-            'user' => null,
-        ]);
+            return $this->render('pages/access_denied.html.twig', [
+                'user' => null,
+            ]);
         }
+
+        $notifications = $em->getRepository(Notification::class)->findBy(['user' => $user, 'readAt' => null]);
+        foreach ($notifications as $notification) {
+            $notification->setReadAt(new \DateTime());
+        }
+        if ($notifications) {
+            $em->flush();
+        }
+
+        $matches = $em->getRepository(PetMatch::class)->findBy(['user' => $user], ['id' => 'DESC']);
+
         return $this->render('matches/index.html.twig', [
             'user' => $user,
-            'matches' => $em->getRepository(PetMatch::class)->findBy(['user' => $user], ['id' => 'DESC']),
+            'matches' => $matches,
+            'matchCount' => count($matches),
             'pets' => $user->getPets(),
         ]);
     }

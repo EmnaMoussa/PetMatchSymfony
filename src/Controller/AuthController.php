@@ -57,9 +57,9 @@ class AuthController extends AbstractController
                 ->setOwner($user)
                 ->setName(trim((string)$request->request->get('pet_nom')))
                 ->setType((string)$request->request->get('espece', 'chien'))
-                ->setBreed(trim((string)$request->request->get('race')) ?: 'Non precise')
-                ->setAge((int)$request->request->get('age'))
-                ->setGender((string)$request->request->get('sexe', ''))
+                ->setBreed(trim((string)$request->request->get('race')) ?: null)
+                ->setAge($request->request->get('age') !== '' ? (int)$request->request->get('age') : null)
+                ->setGender(trim((string)$request->request->get('sexe')) ?: null)
                 ->setDescription(trim((string)$request->request->get('bio')) ?: null);
 
             $em->persist($user);

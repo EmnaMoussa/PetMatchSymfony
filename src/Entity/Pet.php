@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Implementation by: Emna Moussa
  */
 #[ORM\Entity(repositoryClass: PetRepository::class)]
-#[ORM\Table(name: 'pet')]
+#[ORM\Table(name: 'pets')]
 class Pet
 {
     #[ORM\Id]
@@ -21,25 +21,25 @@ class Pet
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: 'nom', length: 100)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(name: 'espece', length: 60)]
     private ?string $type = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(name: 'race', length: 100, nullable: true)]
     private ?string $breed = null;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $age = null;
 
-    #[ORM\Column(length: 10)]
+    #[ORM\Column(name: 'sexe', length: 20, nullable: true)]
     private ?string $gender = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(name: 'bio', type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(name: 'photo', length: 255, nullable: true)]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -110,7 +110,7 @@ class Pet
         return $this->breed;
     }
 
-    public function setBreed(string $breed): static
+    public function setBreed(?string $breed): static
     {
         $this->breed = $breed;
         return $this;
@@ -142,7 +142,7 @@ class Pet
         return $this->gender;
     }
 
-    public function setGender(string $gender): static
+    public function setGender(?string $gender): static
     {
         $this->gender = $gender;
         return $this;

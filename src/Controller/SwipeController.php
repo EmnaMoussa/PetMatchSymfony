@@ -6,6 +6,7 @@ use App\Entity\Pet;
 use App\Entity\PetLike;
 use App\Entity\PetMatch;
 use App\Entity\PetSwipe;
+use App\Entity\Notification;
 use App\Service\SessionUser;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,6 +42,11 @@ class SwipeController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('swipe_action', (string)$request->request->get('_csrf_token'))) {
+                $this->addFlash('error', 'Formulaire expire, veuillez recommencer.');
+                return $this->redirectToRoute('app_swipe', ['animal' => $activePet->getId()]);
+            }
+
             $pet = $em->getRepository(Pet::class)->find((int)$request->request->get('pet_id'));
             $decision = (string)$request->request->get('decision');
 
@@ -85,12 +91,31 @@ class SwipeController extends AbstractController
             ]);
 
             if ($reverseSwipe) {
-                if (!$em->getRepository(PetMatch::class)->findOneBy(['ownerPet' => $activePet, 'pet' => $pet])) {
-                    $em->persist((new PetMatch())->setUser($user)->setOwnerPet($activePet)->setPet($pet));
+                $currentUserMatch = $em->getRepository(PetMatch::class)->findOneBy(['ownerPet' => $activePet, 'pet' => $pet]);
+                $otherUserMatch = $em->getRepository(PetMatch::class)->findOneBy(['ownerPet' => $pet, 'pet' => $activePet]);
+
+                if (!$currentUserMatch) {
+                    $currentUserMatch = (new PetMatch())->setUser($user)->setOwnerPet($activePet)->setPet($pet);
+                    $em->persist($currentUserMatch);
                 }
 
-                if (!$em->getRepository(PetMatch::class)->findOneBy(['ownerPet' => $pet, 'pet' => $activePet])) {
-                    $em->persist((new PetMatch())->setUser($pet->getOwner())->setOwnerPet($pet)->setPet($activePet));
+                if (!$otherUserMatch) {
+                    $otherUserMatch = (new PetMatch())->setUser($pet->getOwner())->setOwnerPet($pet)->setPet($activePet);
+                    $em->persist($otherUserMatch);
+                }
+
+                if (!$this->hasNotification($em, $user, $currentUserMatch)) {
+                    $em->persist((new Notification())
+                        ->setUser($user)
+                        ->setPetMatch($currentUserMatch)
+                        ->setMessage('Nouveau match entre ' . $activePet->getNom() . ' et ' . $pet->getNom()));
+                }
+
+                if ($pet->getOwner() && !$this->hasNotification($em, $pet->getOwner(), $otherUserMatch)) {
+                    $em->persist((new Notification())
+                        ->setUser($pet->getOwner())
+                        ->setPetMatch($otherUserMatch)
+                        ->setMessage('Nouveau match entre ' . $pet->getNom() . ' et ' . $activePet->getNom()));
                 }
 
                 $this->addFlash('success', $activePet->getNom() . ' a un nouveau match avec ' . $pet->getNom() . ' !');
@@ -118,18 +143,14 @@ class SwipeController extends AbstractController
             ->select('p')
             ->from(Pet::class, 'p')
             ->where('p.owner != :user')
+            ->andWhere('p.type = :species')
             ->setParameter('user', $user)
+            ->setParameter('species', $activePet->getType())
             ->setMaxResults(12);
 
         if ($swipedPetIds) {
             $qb->andWhere('p.id NOT IN (:swipedPetIds)')
                 ->setParameter('swipedPetIds', $swipedPetIds);
-        }
-
-        foreach (['espece', 'ville'] as $filter) {
-            if ($request->query->get($filter)) {
-                $qb->andWhere("p.$filter = :$filter")->setParameter($filter, $request->query->get($filter));
-            }
         }
 
         return $this->render('swipe/index.html.twig', [
@@ -150,5 +171,17 @@ class SwipeController extends AbstractController
         if ($relation) {
             $em->remove($relation);
         }
+    }
+
+    private function hasNotification(EntityManagerInterface $em, $user, PetMatch $match): bool
+    {
+        if (!$match->getId()) {
+            return false;
+        }
+
+        return (bool)$em->getRepository(Notification::class)->findOneBy([
+            'user' => $user,
+            'petMatch' => $match,
+        ]);
     }
 }

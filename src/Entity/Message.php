@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Implementation by: Emna Moussa
  */
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
-#[ORM\Table(name: 'message')]
+#[ORM\Table(name: 'messages')]
 class Message
 {
     #[ORM\Id]
@@ -28,6 +28,10 @@ class Message
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'receivedMessages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $receiver = null;
+
+    #[ORM\ManyToOne(targetEntity: PetMatch::class)]
+    #[ORM\JoinColumn(name: 'pet_match_id', nullable: true, onDelete: 'CASCADE')]
+    private ?PetMatch $petMatch = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $content = null;
@@ -73,6 +77,17 @@ class Message
     public function getContent(): ?string
     {
         return $this->content;
+    }
+
+    public function getPetMatch(): ?PetMatch
+    {
+        return $this->petMatch;
+    }
+
+    public function setPetMatch(?PetMatch $petMatch): static
+    {
+        $this->petMatch = $petMatch;
+        return $this;
     }
 
     public function setContent(string $content): static

@@ -2,115 +2,29 @@
 
 {% block title %}Matches - PetMatch{% endblock %}
 
-{% block content %}
-<div class="matches-container">
-    <div class="matches-header">
-        <h1>Your Matches</h1>
-        <p>You have <strong>{{ matchCount }}</strong> active match{{ matchCount != 1 ? 'es' : '' }}</p>
+{% block body %}
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <h1>Mes matches</h1>
+            <p class="muted">{{ matchCount }} match{{ matchCount > 1 ? 's' : '' }} actif{{ matchCount > 1 ? 's' : '' }}</p>
+        </div>
+        <a class="button" href="{{ path('app_swipe') }}">Continuer a swiper</a>
     </div>
 
-    {% if matches is empty %}
-        <div class="empty-state">
-            <h3>No Matches Yet</h3>
-            <p>Keep swiping to find pet friends!</p>
-            <a href="{{ path('swipe') }}" class="btn btn-primary">Start Swiping</a>
-        </div>
-    {% else %}
-        <div class="matches-list">
-            {% for match in matches %}
-                <div class="match-item">
-                    <div class="match-avatar">
-                        <img src="{{ match.matchedWith.profileImage or 'https://via.placeholder.com/100x100' }}" alt="{{ match.matchedWith.firstName }}">
-                    </div>
-                    <div class="match-info">
-                        <h3>{{ match.matchedWith.firstName }} {{ match.matchedWith.lastName }}</h3>
-                        {% if match.matchedWith.location %}
-                            <p class="match-location">📍 {{ match.matchedWith.location }}</p>
-                        {% endif %}
-                        <p class="match-date">Matched {{ match.createdAt|date('M d, Y') }}</p>
-                    </div>
-                    <div class="match-actions">
-                        <a href="{{ path('chat_conversation', {'recipientId': match.matchedWith.id}) }}" class="btn btn-primary">💬 Chat</a>
-                        <a href="{{ path('user_profile', {'id': match.matchedWith.id}) }}" class="btn btn-secondary">👤 Profile</a>
-                    </div>
+    <div class="pet-list">
+        {% for match in matches %}
+            <article class="pet-row">
+                <img class="pet-avatar image" src="{{ asset(match.pet.photo starts with 'uploads/' ? match.pet.photo : 'images/' ~ match.pet.photo) }}" alt="{{ match.pet.nom }}">
+                <div>
+                    <strong>{{ match.ownerPet.nom }} et {{ match.pet.nom }}</strong>
+                    <span>{{ match.pet.owner.fullName }} - {{ match.createdAt|date('d/m/Y H:i') }}</span>
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-</div>
-
-<style>
-.matches-container {
-    padding: 2rem;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.matches-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.matches-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.match-item {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-    background: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.match-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.match-avatar {
-    flex-shrink: 0;
-}
-
-.match-avatar img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.match-info {
-    flex: 1;
-}
-
-.match-info h3 {
-    margin: 0;
-    font-size: 1.2rem;
-}
-
-.match-location, .match-date {
-    color: #666;
-    font-size: 0.9rem;
-    margin: 0.25rem 0;
-}
-
-.match-actions {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.btn-secondary {
-    background: #f0f0f0;
-    color: #333;
-}
-
-.btn-secondary:hover {
-    background: #e0e0e0;
-}
-</style>
+                <a class="button small" href="{{ path('app_chat', {id: match.id}) }}">Chat</a>
+            </article>
+        {% else %}
+            <p class="muted">Aucun match pour le moment. Un match apparait quand deux proprietaires disent oui sur l'animal de l'autre.</p>
+        {% endfor %}
+    </div>
+</section>
 {% endblock %}
