@@ -177,6 +177,14 @@ a.pet-row {
 }
 .form-grid h2, .form-grid .full { grid-column: 1 / -1; }
 label { display: grid; gap: .35rem; font-weight: 700; }
+.checkbox-line {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+.checkbox-line input {
+    width: auto;
+}
 input, select, textarea {
     width: 100%;
     border: 1px solid var(--border);

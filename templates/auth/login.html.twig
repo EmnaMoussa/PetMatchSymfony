@@ -2,12 +2,17 @@
 
 {% block title %}Connexion - PetMatch{% endblock %}
 
-{% block body %}
+{% block content %}
 <section class="panel narrow">
     <h1>Connexion</h1>
     <form method="post" class="form-grid">
-        <label class="full">Email <input type="email" name="email" required></label>
+        {% if error %}
+            <p class="flash error full">Email ou mot de passe incorrect.</p>
+        {% endif %}
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+        <label class="full">Email <input type="email" name="email" value="{{ last_username|default('') }}" required></label>
         <label class="full">Mot de passe <input type="password" name="password" required></label>
+        <label class="full checkbox-line"><input type="checkbox" name="_remember_me"> Se souvenir de moi</label>
         <button type="submit">Se connecter</button>
     </form>
     <p>Pas encore de compte ? <a href="{{ path('app_signup') }}">Inscription</a></p>

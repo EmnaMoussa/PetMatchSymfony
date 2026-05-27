@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PetMatch - Find Your Pet's Perfect Friend{% endblock %}</title>
     {% block stylesheets %}
-        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/responsive.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     {% endblock %}
 </head>
 <body>
@@ -48,6 +47,7 @@
         {% endif %}
 
         {% block content %}{% endblock %}
+        {% block body %}{% endblock %}
     </main>
 
     <footer class="footer">

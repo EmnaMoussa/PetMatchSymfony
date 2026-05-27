@@ -2,7 +2,8 @@
 
 namespace App\Service;
 
-use App\Entity\Match;
+use App\Entity\User;
+use App\Entity\UserMatch;
 use App\Repository\MatchRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -38,7 +39,7 @@ class MatchService
     /**
      * Unmatch with user
      */
-    public function unmatch(Match $match): bool
+    public function unmatch(UserMatch $match): bool
     {
         $match->setIsActive(false);
         $this->entityManager->flush();
@@ -57,7 +58,7 @@ class MatchService
     /**
      * Get matched user from match
      */
-    public function getMatchedUser(Match $match, User $currentUser)
+    public function getMatchedUser(UserMatch $match, User $currentUser)
     {
         return $this->matchRepository->getMatchedUser($match, $currentUser);
     }

@@ -191,7 +191,7 @@ class UserApiController extends AbstractController
      * Get user by ID (public profile)
      */
     #[Route('/{id}', name: 'api_user_get', methods: ['GET'])]
-    public function getUser(User $user): JsonResponse
+    public function showUser(User $user): JsonResponse
     {
         return $this->json($this->userService->getPublicProfile($user));
     }

@@ -9,12 +9,12 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Match Entity
  * Represents a mutual match between two users in the PetMatch application.
- * 
+ *
  * Implementation by: Emna Moussa
  */
 #[ORM\Entity(repositoryClass: MatchRepository::class)]
 #[ORM\Table(name: 'match_table')]
-class Match
+class UserMatch
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

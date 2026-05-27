@@ -74,6 +74,16 @@ class Pet
         return $this;
     }
 
+    public function getNom(): string
+    {
+        return (string) $this->name;
+    }
+
+    public function setNom(string $nom): static
+    {
+        return $this->setName($nom);
+    }
+
     public function getType(): ?string
     {
         return $this->type;
@@ -85,6 +95,16 @@ class Pet
         return $this;
     }
 
+    public function getEspece(): string
+    {
+        return (string) $this->type;
+    }
+
+    public function setEspece(string $espece): static
+    {
+        return $this->setType($espece);
+    }
+
     public function getBreed(): ?string
     {
         return $this->breed;
@@ -94,6 +114,16 @@ class Pet
     {
         $this->breed = $breed;
         return $this;
+    }
+
+    public function getRace(): ?string
+    {
+        return $this->breed;
+    }
+
+    public function setRace(?string $race): static
+    {
+        return $this->setBreed($race ?: '');
     }
 
     public function getAge(): ?int
@@ -118,6 +148,16 @@ class Pet
         return $this;
     }
 
+    public function getSexe(): ?string
+    {
+        return $this->gender;
+    }
+
+    public function setSexe(?string $sexe): static
+    {
+        return $this->setGender($sexe ?: '');
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -129,6 +169,16 @@ class Pet
         return $this;
     }
 
+    public function getBio(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setBio(?string $bio): static
+    {
+        return $this->setDescription($bio);
+    }
+
     public function getImage(): ?string
     {
         return $this->image;
@@ -137,6 +187,26 @@ class Pet
     public function setImage(?string $image): static
     {
         $this->image = $image;
+        return $this;
+    }
+
+    public function getPhoto(): string
+    {
+        return $this->image ?: 'profil1.webp';
+    }
+
+    public function setPhoto(string $photo): static
+    {
+        return $this->setImage($photo);
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->owner?->getVille();
+    }
+
+    public function setVille(?string $ville): static
+    {
         return $this;
     }
 

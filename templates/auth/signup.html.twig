@@ -2,20 +2,21 @@
 
 {% block title %}Inscription - PetMatch{% endblock %}
 
-{% block body %}
+{% block content %}
 <section class="panel narrow">
-    <h1>Créer un compte</h1>
+    <h1>Creer un compte</h1>
     <form method="post" class="form-grid">
-        <label>Prénom <input name="prenom" required></label>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('signup') }}">
+        <label>Prenom <input name="prenom" required></label>
         <label>Nom <input name="nom" required></label>
         <label>Email <input type="email" name="email" required></label>
-        <label>Téléphone <input name="telephone"></label>
+        <label>Telephone <input name="telephone"></label>
         <label>Ville <input name="ville" placeholder="Tunis"></label>
         <label>Mot de passe <input type="password" name="password" minlength="8" required></label>
 
         <h2>Votre animal</h2>
         <label>Nom de l'animal <input name="pet_nom" required></label>
-        <label>Espèce
+        <label>Espece
             <select name="espece">
                 <option value="chien">Chien</option>
                 <option value="chat">Chat</option>
@@ -25,10 +26,10 @@
             </select>
         </label>
         <label>Race <input name="race"></label>
-        <label>Âge <input type="number" name="age" min="0" max="30"></label>
-        <label>Sexe <input name="sexe" placeholder="Femelle / Mâle"></label>
+        <label>Age <input type="number" name="age" min="0" max="30"></label>
+        <label>Sexe <input name="sexe" placeholder="Femelle / Male"></label>
         <label class="full">Bio <textarea name="bio" rows="4"></textarea></label>
-        <button type="submit">Créer mon compte</button>
+        <button type="submit">Creer mon compte</button>
     </form>
 </section>
 {% endblock %}

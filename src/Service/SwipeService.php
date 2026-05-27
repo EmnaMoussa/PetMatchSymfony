@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Entity\Swipe;
 use App\Entity\User;
-use App\Entity\Match;
+use App\Entity\UserMatch;
 use App\Repository\SwipeRepository;
 use App\Repository\MatchRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -71,7 +71,7 @@ class SwipeService
         }
 
         // Create new match
-        $match = new Match();
+        $match = new UserMatch();
         $match->setUser($user1);
         $match->setMatchedWith($user2);
         $match->setIsActive(true);

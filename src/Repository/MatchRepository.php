@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
-use App\Entity\Match;
 use App\Entity\User;
+use App\Entity\UserMatch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,7 +17,7 @@ class MatchRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Match::class);
+        parent::__construct($registry, UserMatch::class);
     }
 
     /**
@@ -53,7 +53,7 @@ class MatchRepository extends ServiceEntityRepository
     /**
      * Check if match exists between two users
      */
-    public function findMatchBetween(User $user1, User $user2): ?Match
+    public function findMatchBetween(User $user1, User $user2): ?UserMatch
     {
         return $this->createQueryBuilder('m')
             ->where(
@@ -69,7 +69,7 @@ class MatchRepository extends ServiceEntityRepository
     /**
      * Get the other user in a match
      */
-    public function getMatchedUser(Match $match, User $currentUser): ?User
+    public function getMatchedUser(UserMatch $match, User $currentUser): ?User
     {
         if ($match->getUser()->getId() === $currentUser->getId()) {
             return $match->getMatchedWith();

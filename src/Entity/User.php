@@ -61,7 +61,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Pet::class, mappedBy: 'owner', cascade: ['remove'])]
     private Collection $pets;
 
-    #[ORM\OneToMany(targetEntity: Match::class, mappedBy: 'user', cascade: ['remove'])]
+    #[ORM\OneToMany(targetEntity: UserMatch::class, mappedBy: 'user', cascade: ['remove'])]
     private Collection $matches;
 
     #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'sender', cascade: ['remove'])]
@@ -132,6 +132,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getPasswordHash(): string
+    {
+        return (string) $this->password;
+    }
+
+    public function setPasswordHash(string $passwordHash): static
+    {
+        return $this->setPassword($passwordHash);
+    }
+
     public function eraseCredentials(): void
     {
     }
@@ -147,6 +157,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getPrenom(): string
+    {
+        return (string) $this->firstName;
+    }
+
+    public function setPrenom(string $prenom): static
+    {
+        return $this->setFirstName($prenom);
+    }
+
     public function getLastName(): ?string
     {
         return $this->lastName;
@@ -156,6 +176,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->lastName = $lastName;
         return $this;
+    }
+
+    public function getNom(): string
+    {
+        return (string) $this->lastName;
+    }
+
+    public function setNom(string $nom): static
+    {
+        return $this->setLastName($nom);
     }
 
     public function getBio(): ?string
@@ -200,6 +230,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->location = $location;
         return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->location;
+    }
+
+    public function setVille(?string $ville): static
+    {
+        return $this->setLocation($ville);
+    }
+
+    public function getTelephone(): ?string
+    {
+        return null;
+    }
+
+    public function setTelephone(?string $telephone): static
+    {
+        return $this;
+    }
+
+    public function getFullName(): string
+    {
+        return trim((string) $this->firstName . ' ' . (string) $this->lastName);
     }
 
     public function getCreatedAt(): ?\DateTime
@@ -252,14 +307,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Match>
+     * @return Collection<int, UserMatch>
      */
     public function getMatches(): Collection
     {
         return $this->matches;
     }
 
-    public function addMatch(Match $match): static
+    public function addMatch(UserMatch $match): static
     {
         if (!$this->matches->contains($match)) {
             $this->matches->add($match);
@@ -268,7 +323,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeMatch(Match $match): static
+    public function removeMatch(UserMatch $match): static
     {
         if ($this->matches->removeElement($match)) {
             if ($match->getUser() === $this) {
