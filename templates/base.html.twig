@@ -9,29 +9,38 @@
     {% endblock %}
 </head>
 <body>
-    <header class="topbar">
-        <a class="brand" href="{{ path('app_home') }}">PetMatch</a>
-        <nav>
-            <a href="{{ path('app_home') }}">Accueil</a>
-            {% if app.user %}
-                <a href="{{ path('app_profile') }}">Profil</a>
-                <a href="{{ path('app_swipe') }}">Swipe</a>
-                <a href="{{ path('app_matches') }}">
-                    Matches
-                    {% set unreadCount = unread_notifications_count() %}
-                    {% if unreadCount > 0 %}
-                        <span class="badge">{{ unreadCount }}</span>
+    <header>
+        <div><h1>PetMatch</h1></div>
+        <div>
+            <nav>
+                <ul>
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    {% if app.user %}
+                        <li><a href="{{ path('app_profile') }}" class="lien-prive">Profil</a></li>
+                        <li><a href="{{ path('app_swipe') }}" class="lien-prive">Swipe</a></li>
+                        <li>
+                            <a href="{{ path('app_matches') }}" class="lien-prive">
+                                Matches
+                                {% set unreadCount = unread_notifications_count() %}
+                                {% if unreadCount > 0 %}
+                                    <span class="notif-badge">{{ unreadCount }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li><a href="{{ path('app_chat_index') }}" class="lien-prive">Chat</a></li>
                     {% endif %}
-                </a>
-                <a href="{{ path('app_chat_index') }}">Chat</a>
-                <a href="{{ path('app_advice') }}">Conseils</a>
-                <a href="{{ path('app_logout') }}">Deconnexion</a>
+                    <li><a href="{{ path('app_advice') }}">Conseils</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="header-auth">
+            {% if app.user %}
+                <a href="{{ path('app_logout') }}" class="btn-outline">Deconnexion</a>
             {% else %}
-                <a href="{{ path('app_login') }}">Se connecter</a>
-                <a href="{{ path('app_signup') }}">S'inscrire</a>
+                <a href="{{ path('app_login') }}" class="btn-outline">Connexion</a>
+                <a href="{{ path('app_signup') }}" class="btn-primary">S'inscrire</a>
             {% endif %}
-            <a href="{{ path('app_contact') }}">Contact</a>
-        </nav>
+        </div>
     </header>
 
     <main>
@@ -46,12 +55,13 @@
     </main>
 
     <footer>
-        <p>PetMatch - cree par Emna Moussa</p>
-        <div class="footer-links">
+        <div>Adoptez, aimez, protegez - PetMatch</div>
+        <div>
             <a href="{{ path('app_advice') }}">Conseils</a>
-            <a href="{{ path('app_contact') }}">Contact</a>
             <a href="{{ path('app_privacy') }}">Confidentialite</a>
+            <a href="{{ path('app_contact') }}">Contact</a>
         </div>
+        <div><p>2026</p></div>
     </footer>
 
     {% block javascripts %}{% endblock %}

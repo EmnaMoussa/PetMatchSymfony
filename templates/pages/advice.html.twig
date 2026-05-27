@@ -5,7 +5,7 @@
 {% block body %}
 <section>
     <h1>Conseils pour vos animaux</h1>
-    <div class="advice-list">
+    <div class="advice-grid">
         {% set conseils = [
             ['Prepare le profil de ton animal', 'Avant de chercher un match, assure-toi que le profil de ton animal est complet : une belle photo, sa race, son age et sa personnalite.', 'conseil.webp'],
             ['Rencontre dans un lieu public', 'Apres un match, organise la premiere rencontre entre les animaux dans un parc ou un espace ouvert.', 'conseil2.webp'],
@@ -16,10 +16,10 @@
         ] %}
 
         {% for conseil in conseils %}
-            <article class="advice-item">
+            <article class="advice-card">
                 <img src="{{ asset('images/' ~ conseil[2]) }}" alt="{{ conseil[0] }}">
                 <div>
-                    <h2>{{ conseil[0] }}</h2>
+                    <h3>{{ conseil[0] }}</h3>
                     <p>{{ conseil[1] }}</p>
                 </div>
             </article>

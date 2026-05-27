@@ -3,32 +3,45 @@
 {% block title %}Inscription - PetMatch{% endblock %}
 
 {% block content %}
-<section class="panel narrow">
-    <h1>Creer un compte</h1>
-    <form method="post" class="form-grid">
+<section class="signup-page">
+    <div class="page-intro">
+        <h2>Creer un compte</h2>
+        <p>Ajoutez vos informations et le premier animal. Vous pourrez ajouter d'autres animaux depuis le profil.</p>
+    </div>
+    <form method="post">
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('signup') }}">
-        <label>Prenom <input name="prenom" required></label>
-        <label>Nom <input name="nom" required></label>
-        <label>Email <input type="email" name="email" required></label>
-        <label>Telephone <input name="telephone"></label>
-        <label>Ville <input name="ville" placeholder="Tunis"></label>
-        <label>Mot de passe <input type="password" name="password" minlength="8" required></label>
+        <fieldset>
+            <legend>Informations du proprietaire</legend>
+            <div class="form-grid">
+                <div class="form-group"><label>Prenom</label><input name="prenom" required></div>
+                <div class="form-group"><label>Nom</label><input name="nom" required></div>
+                <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
+                <div class="form-group"><label>Telephone</label><input name="telephone"></div>
+                <div class="form-group"><label>Ville</label><input name="ville" placeholder="Tunis"></div>
+                <div class="form-group"><label>Mot de passe</label><input type="password" name="password" minlength="8" required></div>
+            </div>
+        </fieldset>
 
-        <h2>Votre animal</h2>
-        <label>Nom de l'animal <input name="pet_nom" required></label>
-        <label>Espece
-            <select name="espece">
-                <option value="chien">Chien</option>
-                <option value="chat">Chat</option>
-                <option value="oiseau">Oiseau</option>
-                <option value="lapin">Lapin</option>
-                <option value="autre">Autre</option>
-            </select>
-        </label>
-        <label>Race <input name="race"></label>
-        <label>Age <input type="number" name="age" min="0" max="30"></label>
-        <label>Sexe <input name="sexe" placeholder="Femelle / Male"></label>
-        <label class="full">Bio <textarea name="bio" rows="4"></textarea></label>
+        <fieldset>
+            <legend>Votre animal</legend>
+            <div class="form-grid">
+                <div class="form-group"><label>Nom de l'animal</label><input name="pet_nom" required></div>
+                <div class="form-group">
+                    <label>Espece</label>
+                    <select name="espece">
+                        <option value="chien">Chien</option>
+                        <option value="chat">Chat</option>
+                        <option value="oiseau">Oiseau</option>
+                        <option value="lapin">Lapin</option>
+                        <option value="autre">Autre</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Race</label><input name="race"></div>
+                <div class="form-group"><label>Age</label><input type="number" name="age" min="0" max="30"></div>
+            </div>
+            <div class="form-group"><label>Sexe</label><input name="sexe" placeholder="Femelle / Male"></div>
+            <div class="form-group"><label>Bio</label><textarea name="bio" rows="4"></textarea></div>
+        </fieldset>
         <button type="submit">Creer mon compte</button>
     </form>
 </section>

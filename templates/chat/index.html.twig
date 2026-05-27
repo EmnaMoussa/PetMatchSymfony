@@ -3,49 +3,53 @@
 {% block title %}Chat - PetMatch{% endblock %}
 
 {% block body %}
-<section class="chat">
-    <aside class="card">
-        <h2>Conversations</h2>
-        <div class="pet-list">
+<section>
+    <div id="chat-container">
+        <div id="colonne-gauche">
+            <h2>Messages</h2>
             {% for item in matches %}
-                <a class="pet-row {{ item.id == match.id ? 'active' : '' }}" href="{{ path('app_chat', {id: item.id}) }}">
-                    <img class="pet-avatar image" src="{{ asset(item.pet.photo starts with 'uploads/' ? item.pet.photo : 'images/' ~ item.pet.photo) }}" alt="{{ item.pet.nom }}">
+                <a class="contact {{ item.id == match.id ? 'active' : '' }}" href="{{ path('app_chat', {id: item.id}) }}">
+                    <img src="{{ asset(item.pet.photo starts with 'uploads/' ? item.pet.photo : 'images/' ~ item.pet.photo) }}" alt="{{ item.pet.nom }}">
                     <div>
-                        <strong>{{ item.pet.nom }}</strong>
-                        <span>{{ item.ownerPet.nom }} avec {{ item.pet.owner.prenom }}</span>
+                        <h5>{{ item.pet.nom }}</h5>
+                        <p>{{ item.ownerPet.nom }} avec {{ item.pet.owner.prenom }}</p>
                     </div>
                 </a>
             {% else %}
-                <p class="muted">Aucune conversation.</p>
+                <div class="empty-state">Aucune conversation.</div>
             {% endfor %}
         </div>
-    </aside>
 
-    <article class="panel">
-        <div class="chat-heading">
-            <img class="pet-avatar image" src="{{ asset(pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) }}" alt="{{ pet.nom }}">
-            <div>
-                <h1>{{ pet.nom }}</h1>
-                <p class="muted">Match avec {{ match.ownerPet.nom }} - {{ pet.owner.fullName }}</p>
+        <div id="colonne-droite">
+            <div id="chat-header">
+                <img src="{{ asset(pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) }}" alt="{{ pet.nom }}">
+                <div>
+                    <h3>{{ pet.nom }}</h3>
+                    <p id="conv-sous-titre">Match avec {{ match.ownerPet.nom }} - {{ pet.owner.fullName }}</p>
+                </div>
+            </div>
+
+            <div id="zone-messages">
+                {% for message in messages %}
+                    <div class="msg {{ message.sender.id == user.id ? 'envoye' : 'recu' }}">
+                        <div class="msg-bulle">
+                            <p>{{ message.content }}</p>
+                            <span class="msg-heure">{{ message.createdAt|date('d/m/Y H:i') }}</span>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="empty-state">Aucun message. Lance la conversation.</div>
+                {% endfor %}
+            </div>
+
+            <div id="chat-input">
+                <form method="post" style="display:flex; gap:0.5rem; width:100%;">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('chat_message') }}">
+                    <input name="message" autocomplete="off" placeholder="Ecrire un message..." required>
+                    <button type="submit">Envoyer</button>
+                </form>
             </div>
         </div>
-
-        <div class="messages">
-            {% for message in messages %}
-                <div class="message {{ message.sender.id == user.id ? 'sent' : 'received' }}">
-                    <p>{{ message.content }}</p>
-                    <span>{{ message.createdAt|date('d/m/Y H:i') }}</span>
-                </div>
-            {% else %}
-                <p class="muted">Aucun message. Lance la conversation.</p>
-            {% endfor %}
-        </div>
-
-        <form method="post" class="chat-form">
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('chat_message') }}">
-            <input name="message" autocomplete="off" placeholder="Ecrire un message..." required>
-            <button type="submit">Envoyer</button>
-        </form>
-    </article>
+    </div>
 </section>
 {% endblock %}

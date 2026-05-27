@@ -3,28 +3,29 @@
 {% block title %}Matches - PetMatch{% endblock %}
 
 {% block body %}
-<section class="panel">
-    <div class="section-heading">
-        <div>
-            <h1>Mes matches</h1>
-            <p class="muted">{{ matchCount }} match{{ matchCount > 1 ? 's' : '' }} actif{{ matchCount > 1 ? 's' : '' }}</p>
-        </div>
-        <a class="button" href="{{ path('app_swipe') }}">Continuer a swiper</a>
-    </div>
+<section>
+    <h2>Mes Matches</h2>
+    <p>Les matches avec de vrais profils apparaitront ici.</p>
 
-    <div class="pet-list">
+    <div id="liste-matches">
         {% for match in matches %}
-            <article class="pet-row">
-                <img class="pet-avatar image" src="{{ asset(match.pet.photo starts with 'uploads/' ? match.pet.photo : 'images/' ~ match.pet.photo) }}" alt="{{ match.pet.nom }}">
-                <div>
-                    <strong>{{ match.ownerPet.nom }} et {{ match.pet.nom }}</strong>
-                    <span>{{ match.pet.owner.fullName }} - {{ match.createdAt|date('d/m/Y H:i') }}</span>
+            <div class="match-card">
+                <img src="{{ asset(match.pet.photo starts with 'uploads/' ? match.pet.photo : 'images/' ~ match.pet.photo) }}" alt="{{ match.pet.nom }}">
+                <div class="match-info">
+                    <h3>{{ match.ownerPet.nom }} et {{ match.pet.nom }}</h3>
+                    <p>{{ match.pet.owner.fullName }}</p>
+                    <p class="match-date">{{ match.createdAt|date('d/m/Y H:i') }}</p>
+                    <a class="btn-primary" href="{{ path('app_chat', {id: match.id}) }}">Chat</a>
                 </div>
-                <a class="button small" href="{{ path('app_chat', {id: match.id}) }}">Chat</a>
-            </article>
-        {% else %}
-            <p class="muted">Aucun match pour le moment. Un match apparait quand deux proprietaires disent oui sur l'animal de l'autre.</p>
+            </div>
         {% endfor %}
     </div>
+
+    {% if matches is empty %}
+        <div id="msg-aucun-match" class="empty-state">
+            Tu n'as pas encore de matches.
+            <a href="{{ path('app_swipe') }}">Continuer a swiper</a>
+        </div>
+    {% endif %}
 </section>
 {% endblock %}

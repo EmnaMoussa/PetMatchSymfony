@@ -3,49 +3,63 @@
 {% block title %}Swipe - PetMatch{% endblock %}
 
 {% block body %}
-<section class="panel">
-    <div class="section-heading">
-        <div>
-            <h1>Swipe</h1>
-            <p class="muted">Les profils proposes sont filtres automatiquement sur l'espece de l'animal choisi.</p>
-        </div>
-        <a class="button ghost" href="{{ path('app_profile') }}">Gerer mes animaux</a>
+<section>
+    <div id="filtres">
+        <select onchange="if (this.value) window.location.href=this.value">
+            {% for userPet in userPets %}
+                <option value="{{ path('app_swipe', {animal: userPet.id}) }}" {{ userPet.id == activePet.id ? 'selected' : '' }}>
+                    {{ userPet.nom }} - {{ userPet.espece|capitalize }}
+                </option>
+            {% endfor %}
+        </select>
+        <select name="age">
+            <option value="">-- Choisissez l'age --</option>
+            <option value="puppy">0-1 an</option>
+            <option value="young">1-3 ans</option>
+            <option value="adult">3-7 ans</option>
+            <option value="senior">7+ ans</option>
+        </select>
+        <select name="localisation">
+            <option value="">-- Choisissez la localisation --</option>
+            <option value="Tunis">Tunis</option>
+            <option value="Bizerte">Bizerte</option>
+            <option value="Nabeul">Nabeul</option>
+            <option value="Sousse">Sousse</option>
+            <option value="Sfax">Sfax</option>
+            <option value="Gabes">Gabes</option>
+            <option value="Autre">Autre</option>
+        </select>
     </div>
 
-    <div class="pet-list">
-        {% for userPet in userPets %}
-            <a class="pet-row {{ userPet.id == activePet.id ? 'active' : '' }}" href="{{ path('app_swipe', {animal: userPet.id}) }}">
-                <img class="pet-avatar image" src="{{ asset(userPet.photo starts with 'uploads/' ? userPet.photo : 'images/' ~ userPet.photo) }}" alt="{{ userPet.nom }}">
-                <div>
-                    <strong>{{ userPet.nom }}</strong>
-                    <span>{{ userPet.espece|capitalize }} - {{ userPet.race ?: 'Race non precisee' }}</span>
+    {% set currentPet = pets|first %}
+    <div id="carte-animal" class="swipe-card">
+        {% if currentPet %}
+            <img class="animal-photo" src="{{ asset(currentPet.photo starts with 'uploads/' ? currentPet.photo : 'images/' ~ currentPet.photo) }}" alt="{{ currentPet.nom }}">
+            <div class="swipe-info">
+                <h3 class="animal-nom">{{ currentPet.nom }}</h3>
+                <div class="swipe-tags">
+                    <span>{{ currentPet.espece|capitalize }}</span>
+                    <span>{{ currentPet.race ?: 'Race non precisee' }}</span>
+                    <span>{{ currentPet.age ?: '?' }} ans</span>
+                    {% if currentPet.ville %}<span>{{ currentPet.ville }}</span>{% endif %}
                 </div>
-            </a>
-        {% endfor %}
-    </div>
-</section>
-
-<section class="grid swipe-grid">
-    {% for pet in pets %}
-        <article class="card swipe-card">
-            <img class="pet-image large" src="{{ asset(pet.photo starts with 'uploads/' ? pet.photo : 'images/' ~ pet.photo) }}" alt="{{ pet.nom }}">
-            <h2>{{ pet.nom }}</h2>
-            <p class="muted">{{ pet.espece|capitalize }} - {{ pet.race ?: 'Race non precisee' }} - {{ pet.age ?: '?' }} ans</p>
-            <p>{{ pet.bio ?: 'Aucune description pour le moment.' }}</p>
-            <p class="muted">Proprietaire: {{ pet.owner.fullName }}{% if pet.ville %} - {{ pet.ville }}{% endif %}</p>
-            <form method="post" class="inline-actions">
+                <p>{{ currentPet.bio ?: 'Aucune description pour le moment.' }}</p>
+                <p class="muted">Proprietaire: {{ currentPet.owner.fullName }}</p>
+            </div>
+            <form method="post" id="swipe-buttons">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('swipe_action') }}">
                 <input type="hidden" name="owner_pet_id" value="{{ activePet.id }}">
-                <input type="hidden" name="pet_id" value="{{ pet.id }}">
-                <button class="ghost" type="submit" name="decision" value="skip">Passer</button>
-                <button type="submit" name="decision" value="like">Oui</button>
+                <input type="hidden" name="pet_id" value="{{ currentPet.id }}">
+                <button id="btn-non" type="submit" name="decision" value="skip">Non</button>
+                <button id="btn-oui" type="submit" name="decision" value="like">Oui</button>
             </form>
-        </article>
-    {% else %}
-        <article class="panel">
-            <h2>Aucun profil disponible</h2>
-            <p class="muted">{{ activePet.nom }} a deja vu tous les profils {{ activePet.espece }} disponibles. Les memes profils ne recommencent pas.</p>
-        </article>
-    {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <h3>Aucun profil disponible</h3>
+                <p>{{ activePet.nom }} a deja vu tous les profils {{ activePet.espece }} disponibles.</p>
+            </div>
+        {% endif %}
+        <p class="compteur-profil">{{ pets|length }} profil{{ pets|length > 1 ? 's' : '' }}</p>
+    </div>
 </section>
 {% endblock %}

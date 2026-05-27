@@ -3,18 +3,21 @@
 {% block title %}Connexion - PetMatch{% endblock %}
 
 {% block content %}
-<section class="panel narrow">
-    <h1>Connexion</h1>
-    <form method="post" class="form-grid">
+<section class="auth-page">
+    <div class="page-intro">
+        <h2>Connexion</h2>
+        <p>Connectez-vous pour acceder a votre profil, vos swipes et vos matches.</p>
+    </div>
+    <form method="post" class="auth-form">
         {% if error %}
             <p class="flash error full">Email ou mot de passe incorrect.</p>
         {% endif %}
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-        <label class="full">Email <input type="email" name="email" value="{{ last_username|default('') }}" required></label>
-        <label class="full">Mot de passe <input type="password" name="password" required></label>
-        <label class="full checkbox-line"><input type="checkbox" name="_remember_me"> Se souvenir de moi</label>
+        <div class="form-group"><label>Email</label><input type="email" name="email" value="{{ last_username|default('') }}" required></div>
+        <div class="form-group"><label>Mot de passe</label><input type="password" name="password" required></div>
+        <div class="inline-check"><input type="checkbox" name="_remember_me" id="remember"><label for="remember">Se souvenir de moi</label></div>
         <button type="submit">Se connecter</button>
     </form>
-    <p>Pas encore de compte ? <a href="{{ path('app_signup') }}">Inscription</a></p>
+    <p class="form-link">Pas encore de compte ? <a href="{{ path('app_signup') }}">Inscription</a></p>
 </section>
 {% endblock %}
