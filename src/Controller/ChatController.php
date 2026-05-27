@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Message;
+use App\Entity\Notification;
 use App\Entity\Pet;
 use App\Entity\PetMatch;
 use App\Service\SessionUser;
@@ -59,6 +60,16 @@ class ChatController extends AbstractController
             return $this->redirectToRoute('app_matches');
         }
 
+        $conversationMatches = [$match];
+        $reverseMatch = $em->getRepository(PetMatch::class)->findOneBy([
+            'ownerPet' => $match->getPet(),
+            'pet' => $match->getOwnerPet(),
+        ]);
+
+        if ($reverseMatch) {
+            $conversationMatches[] = $reverseMatch;
+        }
+
         if ($request->isMethod('POST')) {
             if (!$this->isCsrfTokenValid('chat_message', (string)$request->request->get('_csrf_token'))) {
                 $this->addFlash('error', 'Formulaire expire, veuillez recommencer.');
@@ -74,20 +85,29 @@ class ChatController extends AbstractController
                     ->setContent($content);
 
                 $em->persist($message);
+
+                $notificationMatch = $reverseMatch ?? $match;
+                $em->persist((new Notification())
+                    ->setUser($receiver)
+                    ->setPetMatch($notificationMatch)
+                    ->setMessage($user->getFullName() . ' vous a envoye un message.'));
+
                 $em->flush();
             }
 
             return $this->redirectToRoute('app_chat', ['id' => $match->getId()]);
         }
 
-        $conversationMatches = [$match];
-        $reverseMatch = $em->getRepository(PetMatch::class)->findOneBy([
-            'ownerPet' => $match->getPet(),
-            'pet' => $match->getOwnerPet(),
+        $unreadNotifications = $em->getRepository(Notification::class)->findBy([
+            'user' => $user,
+            'petMatch' => $conversationMatches,
+            'readAt' => null,
         ]);
-
-        if ($reverseMatch) {
-            $conversationMatches[] = $reverseMatch;
+        foreach ($unreadNotifications as $notification) {
+            $notification->setReadAt(new \DateTime());
+        }
+        if ($unreadNotifications) {
+            $em->flush();
         }
 
         $messages = $em->createQueryBuilder()
