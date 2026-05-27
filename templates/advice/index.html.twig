@@ -1,0 +1,184 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pet Advice & Tips - PetMatch{% endblock %}
+
+{% block content %}
+<div class="advice-container">
+    <div class="advice-header">
+        <h1>Pet Care Tips & Advice</h1>
+        <p>Learn from experts about caring for your furry friends</p>
+    </div>
+
+    <div class="advice-search">
+        <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="Search articles..."
+        >
+        <select id="categoryFilter" class="category-filter">
+            <option value="">All Categories</option>
+            <option value="health">Health</option>
+            <option value="nutrition">Nutrition</option>
+            <option value="training">Training</option>
+            <option value="grooming">Grooming</option>
+            <option value="behavior">Behavior</option>
+        </select>
+    </div>
+
+    <div class="articles-grid" id="articlesGrid">
+        <p class="loading">Loading articles...</p>
+    </div>
+</div>
+
+<style>
+.advice-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.advice-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.advice-search {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.category-filter {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    min-width: 150px;
+}
+
+.articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.article-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.article-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.article-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.article-content {
+    padding: 1.5rem;
+}
+
+.article-category {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.article-title {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.article-excerpt {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 1rem 0;
+}
+
+.article-date {
+    color: #999;
+    font-size: 0.85rem;
+}
+</style>
+
+<script>
+async function loadArticles(query = '', category = '') {
+    try {
+        let url = '/api/advice';
+        const params = new URLSearchParams();
+        
+        if (query) params.append('q', query);
+        if (category) params.append('category', category);
+        
+        if (params.toString()) url += '?' + params.toString();
+
+        const response = await fetch(url);
+        const data = await response.json();
+        const grid = document.getElementById('articlesGrid');
+        
+        if (!data.articles || data.articles.length === 0) {
+            grid.innerHTML = '<p class="empty">No articles found</p>';
+            return;
+        }
+
+        grid.innerHTML = data.articles.map(article => `
+            <div class="article-card" onclick="openArticle(${article.id})">
+                <img src="${article.image || 'https://via.placeholder.com/300x200'}" alt="${article.title}" class="article-image">
+                <div class="article-content">
+                    <span class="article-category">${article.category || 'General'}</span>
+                    <h3 class="article-title">${article.title}</h3>
+                    <p class="article-excerpt">${article.excerpt || 'Read more...'}</p>
+                    <p class="article-date">${new Date(article.publishedAt).toLocaleDateString()}</p>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading articles:', error);
+    }
+}
+
+function openArticle(articleId) {
+    window.location.href = `/advice/${articleId}`;
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    const category = document.getElementById('categoryFilter').value;
+    if (e.target.value) {
+        loadArticles(e.target.value, category);
+    } else {
+        loadArticles('', category);
+    }
+});
+
+document.getElementById('categoryFilter').addEventListener('change', (e) => {
+    const query = document.getElementById('searchInput').value;
+    loadArticles(query, e.target.value);
+});
+
+document.addEventListener('DOMContentLoaded', loadArticles);
+</script>
+{% endblock %}
