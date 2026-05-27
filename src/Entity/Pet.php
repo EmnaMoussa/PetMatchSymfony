@@ -2,10 +2,18 @@
 
 namespace App\Entity;
 
+use App\Repository\PetRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
-#[ORM\Table(name: 'pets')]
+/**
+ * Pet Entity
+ * Represents a pet in the PetMatch application.
+ * 
+ * Implementation by: Emna Moussa
+ */
+#[ORM\Entity(repositoryClass: PetRepository::class)]
+#[ORM\Table(name: 'pet')]
 class Pet
 {
     #[ORM\Id]
@@ -13,51 +21,155 @@ class Pet
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'pets')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?User $owner = null;
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
 
     #[ORM\Column(length: 100)]
-    private string $nom = '';
+    private ?string $type = null;
 
-    #[ORM\Column(length: 60)]
-    private string $espece = '';
+    #[ORM\Column(length: 100)]
+    private ?string $breed = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $race = null;
-
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $age = null;
 
-    #[ORM\Column(length: 20, nullable: true)]
-    private ?string $sexe = null;
+    #[ORM\Column(length: 10)]
+    private ?string $gender = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $ville = null;
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $bio = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
 
-    #[ORM\Column(length: 255)]
-    private string $photo = 'profil1.webp';
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTime $createdAt = null;
 
-    public function getId(): ?int { return $this->id; }
-    public function getOwner(): ?User { return $this->owner; }
-    public function setOwner(?User $owner): self { $this->owner = $owner; return $this; }
-    public function getNom(): string { return $this->nom; }
-    public function setNom(string $nom): self { $this->nom = $nom; return $this; }
-    public function getEspece(): string { return $this->espece; }
-    public function setEspece(string $espece): self { $this->espece = $espece; return $this; }
-    public function getRace(): ?string { return $this->race; }
-    public function setRace(?string $race): self { $this->race = $race; return $this; }
-    public function getAge(): ?int { return $this->age; }
-    public function setAge(?int $age): self { $this->age = $age; return $this; }
-    public function getSexe(): ?string { return $this->sexe; }
-    public function setSexe(?string $sexe): self { $this->sexe = $sexe; return $this; }
-    public function getVille(): ?string { return $this->ville; }
-    public function setVille(?string $ville): self { $this->ville = $ville; return $this; }
-    public function getBio(): ?string { return $this->bio; }
-    public function setBio(?string $bio): self { $this->bio = $bio; return $this; }
-    public function getPhoto(): string { return $this->photo; }
-    public function setPhoto(string $photo): self { $this->photo = $photo; return $this; }
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTime $updatedAt = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'pets')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getBreed(): ?string
+    {
+        return $this->breed;
+    }
+
+    public function setBreed(string $breed): static
+    {
+        $this->breed = $breed;
+        return $this;
+    }
+
+    public function getAge(): ?int
+    {
+        return $this->age;
+    }
+
+    public function setAge(?int $age): static
+    {
+        $this->age = $age;
+        return $this;
+    }
+
+    public function getGender(): ?string
+    {
+        return $this->gender;
+    }
+
+    public function setGender(string $gender): static
+    {
+        $this->gender = $gender;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTime $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTime $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
+        return $this;
+    }
 }
