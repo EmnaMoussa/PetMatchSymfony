@@ -1,0 +1,174 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - PetMatch{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Welcome, {{ app.user.firstName }}!</h1>
+        <p>Manage your profile and discover new pet friends</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Profile Completion Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Profile Completion</h2>
+            </div>
+            <div class="card-body">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ profileCompletion }}%"></div>
+                </div>
+                <p class="progress-text">{{ profileCompletion }}% Complete</p>
+                {% if profileCompletion < 100 %}
+                    <a href="{{ path('profile_edit') }}" class="btn btn-primary">Complete Profile</a>
+                {% else %}
+                    <p class="text-success">✓ Profile Complete</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- My Pets Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2>My Pets</h2>
+            </div>
+            <div class="card-body">
+                <p class="stat-number">{{ petCount }}</p>
+                <p class="stat-label">Pet{{ petCount != 1 ? 's' : '' }} Added</p>
+                <a href="{{ path('pets_list') }}" class="btn btn-primary">Manage Pets</a>
+            </div>
+        </div>
+
+        <!-- Matches Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Matches</h2>
+            </div>
+            <div class="card-body">
+                <p class="stat-number">{{ matchCount }}</p>
+                <p class="stat-label">Active Match{{ matchCount != 1 ? 'es' : '' }}</p>
+                <a href="{{ path('matches') }}" class="btn btn-primary">View Matches</a>
+            </div>
+        </div>
+
+        <!-- Unread Messages Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Messages</h2>
+            </div>
+            <div class="card-body">
+                <p class="stat-number">{{ unreadCount }}</p>
+                <p class="stat-label">Unread Message{{ unreadCount != 1 ? 's' : '' }}</p>
+                <a href="{{ path('chat') }}" class="btn btn-primary">Go to Chat</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+            <a href="{{ path('swipe') }}" class="btn btn-lg btn-primary">🎴 Start Swiping</a>
+            <a href="{{ path('pet_create') }}" class="btn btn-lg btn-secondary">➕ Add New Pet</a>
+            <a href="{{ path('advice') }}" class="btn btn-lg btn-secondary">📚 Read Pet Tips</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.dashboard-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+}
+
+.card-body {
+    padding: 2rem;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #667eea;
+    margin: 1rem 0;
+}
+
+.stat-label {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+</style>
+{% endblock %}

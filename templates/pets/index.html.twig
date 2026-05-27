@@ -1,0 +1,153 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Pets - PetMatch{% endblock %}
+
+{% block content %}
+<div class="pets-container">
+    <div class="pets-header">
+        <h1>My Pets</h1>
+        <a href="{{ path('pet_create') }}" class="btn btn-primary">➕ Add New Pet</a>
+    </div>
+
+    {% if pets is empty %}
+        <div class="empty-state">
+            <h3>No Pets Yet</h3>
+            <p>Add your first pet to get started with PetMatch!</p>
+            <a href="{{ path('pet_create') }}" class="btn btn-primary">Add Pet</a>
+        </div>
+    {% else %}
+        <div class="pets-grid">
+            {% for pet in pets %}
+                <div class="pet-card">
+                    <div class="pet-image-container">
+                        <img src="{{ pet.image or 'https://via.placeholder.com/300x300' }}" alt="{{ pet.name }}" class="pet-image">
+                        <div class="pet-actions">
+                            <a href="{{ path('pet_edit', {'id': pet.id}) }}" class="btn-icon">✏️</a>
+                            <a href="{{ path('pet_delete', {'id': pet.id}) }}" class="btn-icon btn-danger" onclick="return confirm('Delete this pet?')">🗑️</a>
+                        </div>
+                    </div>
+                    <div class="pet-details">
+                        <h3>{{ pet.name }}</h3>
+                        <p class="pet-type">{{ pet.type | capitalize }} - {{ pet.breed }}</p>
+                        {% if pet.age %}
+                            <p class="pet-age">Age: {{ pet.age }} year{{ pet.age != 1 ? 's' : '' }}</p>
+                        {% endif %}
+                        {% if pet.gender %}
+                            <p class="pet-gender">Gender: {{ pet.gender | capitalize }}</p>
+                        {% endif %}
+                        {% if pet.description %}
+                            <p class="pet-bio">{{ pet.description }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.pets-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pets-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.pets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.pet-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pet-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pet-image-container {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+}
+
+.pet-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pet-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.pet-card:hover .pet-actions {
+    opacity: 1;
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.btn-icon:hover {
+    background: #f0f0f0;
+}
+
+.btn-danger:hover {
+    background: #ffebee;
+}
+
+.pet-details {
+    padding: 1.5rem;
+}
+
+.pet-type {
+    color: #667eea;
+    font-weight: 600;
+    margin: 0.5rem 0;
+}
+
+.pet-age, .pet-gender {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0.25rem 0;
+}
+
+.pet-bio {
+    color: #888;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    line-height: 1.5;
+}
+</style>
+{% endblock %}
