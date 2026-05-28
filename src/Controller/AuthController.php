@@ -14,6 +14,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AuthController extends AbstractController
 {
@@ -25,6 +26,7 @@ class AuthController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         UserAuthenticatorInterface $userAuthenticator,
         LoginFormAuthenticator $authenticator,
+        SluggerInterface $slugger,
     ): Response {
         if ($request->isMethod('POST')) {
             if (!$this->isCsrfTokenValid('signup', (string)$request->request->get('_csrf_token'))) {
@@ -66,6 +68,31 @@ class AuthController extends AbstractController
                 ->setAge($request->request->get('age') !== '' ? (int)$request->request->get('age') : null)
                 ->setGender($petGender)
                 ->setDescription(trim((string)$request->request->get('bio')) ?: null);
+
+            $photo = $request->files->get('photo');
+            if ($photo && $photo->isValid()) {
+                if (!in_array($photo->getMimeType(), ['image/jpeg', 'image/png', 'image/webp'], true)) {
+                    $this->addFlash('error', 'Format photo invalide. Utilisez JPG, PNG ou WEBP.');
+                    return $this->redirectToRoute('app_signup');
+                }
+
+                if ($photo->getSize() > 2 * 1024 * 1024) {
+                    $this->addFlash('error', 'La photo ne doit pas depasser 2 Mo.');
+                    return $this->redirectToRoute('app_signup');
+                }
+
+                $originalName = pathinfo((string)$photo->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeName = $slugger->slug($originalName ?: 'animal')->lower();
+                $fileName = $safeName . '-' . uniqid() . '.' . ($photo->guessExtension() ?: 'jpg');
+                $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads';
+
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0775, true);
+                }
+
+                $photo->move($uploadDir, $fileName);
+                $pet->setPhoto('uploads/' . $fileName);
+            }
 
             $em->persist($user);
             $em->persist($pet);
