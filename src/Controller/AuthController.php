@@ -45,6 +45,11 @@ class AuthController extends AbstractController
                 return $this->redirectToRoute('app_signup');
             }
 
+            $petGender = strtolower(trim((string)$request->request->get('sexe')));
+            if (!in_array($petGender, ['male', 'femelle'], true)) {
+                $petGender = null;
+            }
+
             $user = (new User())
                 ->setFirstName(trim((string)$request->request->get('prenom')))
                 ->setLastName(trim((string)$request->request->get('nom')))
@@ -59,7 +64,7 @@ class AuthController extends AbstractController
                 ->setType((string)$request->request->get('espece', 'chien'))
                 ->setBreed(trim((string)$request->request->get('race')) ?: null)
                 ->setAge($request->request->get('age') !== '' ? (int)$request->request->get('age') : null)
-                ->setGender(trim((string)$request->request->get('sexe')) ?: null)
+                ->setGender($petGender)
                 ->setDescription(trim((string)$request->request->get('bio')) ?: null);
 
             $em->persist($user);

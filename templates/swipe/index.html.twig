@@ -4,32 +4,28 @@
 
 {% block body %}
 <section>
-    <div id="filtres">
-        <select onchange="if (this.value) window.location.href=this.value">
+    <form id="filtres" method="get">
+        <select name="animal" onchange="this.form.submit()">
             {% for userPet in userPets %}
-                <option value="{{ path('app_swipe', {animal: userPet.id}) }}" {{ userPet.id == activePet.id ? 'selected' : '' }}>
+                <option value="{{ userPet.id }}" {{ userPet.id == activePet.id ? 'selected' : '' }}>
                     {{ userPet.nom }} - {{ userPet.espece|capitalize }}
                 </option>
             {% endfor %}
         </select>
-        <select name="age">
-            <option value="">-- Choisissez l'age --</option>
-            <option value="puppy">0-1 an</option>
-            <option value="young">1-3 ans</option>
-            <option value="adult">3-7 ans</option>
-            <option value="senior">7+ ans</option>
+        <select name="age" onchange="this.form.submit()">
+            <option value="" {{ ageFilter == '' ? 'selected' : '' }}>-- Choisissez l'age --</option>
+            <option value="puppy" {{ ageFilter == 'puppy' ? 'selected' : '' }}>0-1 an</option>
+            <option value="young" {{ ageFilter == 'young' ? 'selected' : '' }}>1-3 ans</option>
+            <option value="adult" {{ ageFilter == 'adult' ? 'selected' : '' }}>3-7 ans</option>
+            <option value="senior" {{ ageFilter == 'senior' ? 'selected' : '' }}>7+ ans</option>
         </select>
-        <select name="localisation">
-            <option value="">-- Choisissez la localisation --</option>
-            <option value="Tunis">Tunis</option>
-            <option value="Bizerte">Bizerte</option>
-            <option value="Nabeul">Nabeul</option>
-            <option value="Sousse">Sousse</option>
-            <option value="Sfax">Sfax</option>
-            <option value="Gabes">Gabes</option>
-            <option value="Autre">Autre</option>
+        <select name="localisation" onchange="this.form.submit()">
+            <option value="" {{ locationFilter == '' ? 'selected' : '' }}>-- Choisissez la localisation --</option>
+            {% for city in ['Tunis', 'Bizerte', 'Nabeul', 'Sousse', 'Sfax', 'Gabes', 'Autre'] %}
+                <option value="{{ city }}" {{ locationFilter == city ? 'selected' : '' }}>{{ city }}</option>
+            {% endfor %}
         </select>
-    </div>
+    </form>
 
     {% set currentPet = pets|first %}
     <div id="carte-animal" class="swipe-card">

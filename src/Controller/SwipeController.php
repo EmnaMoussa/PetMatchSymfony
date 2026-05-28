@@ -141,9 +141,13 @@ class SwipeController extends AbstractController
             }
         }
 
+        $ageFilter = (string)$request->query->get('age', '');
+        $locationFilter = trim((string)$request->query->get('localisation', ''));
+
         $qb = $em->createQueryBuilder()
             ->select('p')
             ->from(Pet::class, 'p')
+            ->join('p.owner', 'owner')
             ->where('p.owner != :user')
             ->andWhere('p.type = :species')
             ->setParameter('user', $user)
@@ -165,11 +169,28 @@ class SwipeController extends AbstractController
                 ->setParameter('swipedPetIds', $swipedPetIds);
         }
 
+        if ($locationFilter !== '') {
+            $qb->andWhere('owner.location = :location')
+                ->setParameter('location', $locationFilter);
+        }
+
+        if ($ageFilter === 'puppy') {
+            $qb->andWhere('p.age <= 1');
+        } elseif ($ageFilter === 'young') {
+            $qb->andWhere('p.age > 1 AND p.age <= 3');
+        } elseif ($ageFilter === 'adult') {
+            $qb->andWhere('p.age > 3 AND p.age <= 7');
+        } elseif ($ageFilter === 'senior') {
+            $qb->andWhere('p.age > 7');
+        }
+
         return $this->render('swipe/index.html.twig', [
             'user' => $user,
             'userPets' => $userPets,
             'activePet' => $activePet,
             'pets' => $qb->getQuery()->getResult(),
+            'ageFilter' => $ageFilter,
+            'locationFilter' => $locationFilter,
         ]);
     }
 
