@@ -143,14 +143,22 @@ class SwipeController extends AbstractController
 
         $qb = $em->createQueryBuilder()
             ->select('p')
-            ->addSelect('CASE WHEN p.type = :species THEN 0 ELSE 1 END AS HIDDEN speciesPriority')
             ->from(Pet::class, 'p')
             ->where('p.owner != :user')
+            ->andWhere('p.type = :species')
             ->setParameter('user', $user)
             ->setParameter('species', $activePet->getType())
-            ->orderBy('speciesPriority', 'ASC')
-            ->addOrderBy('p.createdAt', 'DESC')
             ->setMaxResults(12);
+
+        if ($activePet->getGender()) {
+            $qb->addSelect('CASE WHEN p.gender IS NOT NULL AND p.gender <> :emptyGender AND p.gender <> :activeGender THEN 0 ELSE 1 END AS HIDDEN genderPriority')
+                ->setParameter('emptyGender', '')
+                ->setParameter('activeGender', $activePet->getGender())
+                ->orderBy('genderPriority', 'ASC')
+                ->addOrderBy('p.createdAt', 'DESC');
+        } else {
+            $qb->orderBy('p.createdAt', 'DESC');
+        }
 
         if ($swipedPetIds) {
             $qb->andWhere('p.id NOT IN (:swipedPetIds)')
